@@ -15,6 +15,7 @@
 ## Task 1: Git init and gitignore
 
 **Files:**
+
 - Create: `.gitignore`
 
 - [ ] **Step 1: Initialize git repo on main branch**
@@ -58,6 +59,7 @@ Expected: a single commit on `main`.
 ## Task 2: package.json and dependencies
 
 **Files:**
+
 - Create: `package.json`
 
 - [ ] **Step 1: Write `package.json`**
@@ -136,6 +138,7 @@ git commit -m "chore: add package.json with React/Vite/TS/Vitest/Playwright deps
 ## Task 3: TypeScript configuration
 
 **Files:**
+
 - Create: `tsconfig.json`
 - Create: `tsconfig.app.json`
 - Create: `tsconfig.node.json`
@@ -145,10 +148,7 @@ git commit -m "chore: add package.json with React/Vite/TS/Vitest/Playwright deps
 ```json
 {
   "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
 }
 ```
 
@@ -218,6 +218,7 @@ git commit -m "chore: add TypeScript configuration with strict mode"
 ## Task 4: Vite + minimal React app
 
 **Files:**
+
 - Create: `index.html`
 - Create: `vite.config.ts`
 - Create: `src/main.tsx`
@@ -308,6 +309,7 @@ git commit -m "feat: bootstrap minimal Vite + React app rendering 'Sudoku'"
 ## Task 5: CSS tokens and global styles
 
 **Files:**
+
 - Create: `src/styles/tokens.css`
 - Create: `src/styles/global.css`
 
@@ -450,6 +452,7 @@ git commit -m "feat: add CSS tokens and global styles with light/dark theming"
 ## Task 6: Vitest setup + component smoke test
 
 **Files:**
+
 - Create: `vitest.config.ts`
 - Create: `src/vitest-setup.ts`
 - Create: `src/app.test.tsx`
@@ -521,6 +524,7 @@ git commit -m "test: add Vitest + RTL setup with App smoke test"
 ## Task 7: ESLint + Prettier
 
 **Files:**
+
 - Create: `.eslintrc.cjs`
 - Create: `.eslintignore`
 - Create: `.prettierrc.json`
@@ -614,6 +618,7 @@ git commit -m "chore: add ESLint and Prettier configuration"
 ## Task 8: Husky + lint-staged pre-commit hook
 
 **Files:**
+
 - Create: `.husky/pre-commit`
 
 - [ ] **Step 1: Initialize Husky**
@@ -662,6 +667,7 @@ git commit -m "chore: add Husky pre-commit hook running lint-staged and typechec
 ## Task 9: Playwright + e2e smoke test
 
 **Files:**
+
 - Create: `playwright.config.ts`
 - Create: `tests/e2e/smoke.spec.ts`
 
@@ -735,6 +741,7 @@ git commit -m "test: add Playwright e2e smoke test for app rendering"
 ## Task 10: GitHub Actions CI workflow
 
 **Files:**
+
 - Create: `.github/workflows/ci.yml`
 
 - [ ] **Step 1: Write `.github/workflows/ci.yml`**
@@ -803,11 +810,12 @@ git commit -m "ci: add GitHub Actions workflow with verify and Pages deploy"
 ## Task 11: README
 
 **Files:**
+
 - Create: `README.md`
 
 - [ ] **Step 1: Write `README.md`**
 
-```markdown
+````markdown
 # my-sudoku
 
 A single-page sudoku web app with four difficulty tiers, manual and auto pencil marks, and a technique-aware hint system that explains rather than reveals.
@@ -829,17 +837,19 @@ npm run format       # Prettier write
 npm run build        # production bundle
 npm run preview      # serve built bundle locally
 ```
+````
 
 ## Stack
 
 React 18, TypeScript, Vite, Zustand, Vitest, Playwright. Deployed to GitHub Pages.
-```
+
+````
 
 - [ ] **Step 2: Run full verification before commit**
 
 ```bash
 npm run lint && npm run format:check && npm run typecheck && npm test && npm run build
-```
+````
 
 Expected: all green.
 

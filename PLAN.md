@@ -28,7 +28,7 @@ This section is the authoritative record of decisions made during the design gri
 ### 1.1 Puzzles
 
 - **Source:** Runtime generation in a Web Worker. No bundled puzzle library.
-- **Difficulty tiers and required techniques** (each tier *adds* to the previous):
+- **Difficulty tiers and required techniques** (each tier _adds_ to the previous):
   - **Easy:** naked singles, hidden singles
   - **Medium:** + naked pairs, naked triples, hidden pairs, hidden triples, pointing pairs (locked candidates)
   - **Hard:** + naked quads, hidden quads, X-wing, box/line reduction
@@ -42,9 +42,9 @@ This section is the authoritative record of decisions made during the design gri
 - **4-level progressive disclosure:**
   1. Region pointer ("Try looking at row 4.")
   2. Technique name ("There's a hidden single in row 4.")
-  3. Visual highlight + one-sentence explanation of *why*.
+  3. Visual highlight + one-sentence explanation of _why_.
   4. App places the number (counts as one move on the undo stack).
-- **Algorithm:** Always pick the *easiest applicable* technique. Ties broken by first-found.
+- **Algorithm:** Always pick the _easiest applicable_ technique. Ties broken by first-found.
 - **Explainer link:** Level 2 and Level 3 show a "What is this technique?" link that opens a brief explainer (one screen of text + small diagram).
 - **Hints used** is tracked and shown in the win modal. Does not count as a mistake.
 
@@ -66,7 +66,7 @@ This section is the authoritative record of decisions made during the design gri
 - **When a cell C is selected:**
   - Faint background tint on C's row, column, and box.
   - If C contains a digit, also activate "number selected" highlights for that digit.
-- **Conflicts** (same digit twice in a unit): both offending cells highlighted red. Conflict checking is *rule violations only* — never against the unique solution.
+- **Conflicts** (same digit twice in a unit): both offending cells highlighted red. Conflict checking is _rule violations only_ — never against the unique solution.
 - **Color palette:** must work in both light and dark themes; must be color-blind safe (uses brightness + hue, not hue alone).
 
 ### 1.5 Input Model
@@ -98,7 +98,7 @@ This section is the authoritative record of decisions made during the design gri
 - **Timer:** counts up, optional (toggle in settings, default on), pausable. Pausing **blanks the grid** to prevent the timer being gamed.
 - **Mistakes counter:** informational only, no limit. Optional via setting. Counts rule violations only.
 - **No "check my work" button.** Real-time conflict highlighting + hint system are the unstuck tools.
-- **No auto-placement on single-candidate cells.** The play *is* the placement.
+- **No auto-placement on single-candidate cells.** The play _is_ the placement.
 
 ### 1.9 New Game & Win State
 
@@ -132,9 +132,9 @@ This section is the authoritative record of decisions made during the design gri
 - Game store shape (sketch):
   ```ts
   type GameState = {
-    puzzle: Puzzle;                 // immutable puzzle definition
-    cells: Cell[][];                // current state
-    given: boolean[][];             // which cells came from the puzzle
+    puzzle: Puzzle; // immutable puzzle definition
+    cells: Cell[][]; // current state
+    given: boolean[][]; // which cells came from the puzzle
     selection: { cell: CellCoord | null; number: Digit | null };
     difficulty: Difficulty;
     history: { past: GameSnapshot[]; future: GameSnapshot[] };
@@ -163,10 +163,10 @@ export type Difficulty = 'easy' | 'medium' | 'hard' | 'expert';
 
 export type Cell = {
   value: Digit | null;
-  pencilMarks: Set<Digit>;       // serialized as number[] for storage
+  pencilMarks: Set<Digit>; // serialized as number[] for storage
 };
 
-export type Board = Cell[][];     // 9x9
+export type Board = Cell[][]; // 9x9
 export type SolvedGrid = Digit[][]; // 9x9 fully solved
 ```
 
@@ -177,8 +177,8 @@ export type SolvedGrid = Digit[][]; // 9x9 fully solved
 export type Puzzle = {
   id: string;
   difficulty: Difficulty;
-  initialBoard: (Digit | null)[][];  // 9x9, null = empty
-  solution: SolvedGrid;              // the unique solution
+  initialBoard: (Digit | null)[][]; // 9x9, null = empty
+  solution: SolvedGrid; // the unique solution
 };
 ```
 
@@ -191,26 +191,48 @@ A solver step describes one technique application: which technique, which cells 
 import type { CellCoord, Digit, Difficulty } from '../types';
 
 export type TechniqueName =
-  | 'nakedSingle' | 'hiddenSingle'
-  | 'nakedPair' | 'nakedTriple' | 'hiddenPair' | 'hiddenTriple' | 'pointingPair'
-  | 'nakedQuad' | 'hiddenQuad' | 'xWing' | 'boxLineReduction'
-  | 'swordfish' | 'xyWing' | 'xyzWing' | 'coloring' | 'uniqueRectangle';
+  | 'nakedSingle'
+  | 'hiddenSingle'
+  | 'nakedPair'
+  | 'nakedTriple'
+  | 'hiddenPair'
+  | 'hiddenTriple'
+  | 'pointingPair'
+  | 'nakedQuad'
+  | 'hiddenQuad'
+  | 'xWing'
+  | 'boxLineReduction'
+  | 'swordfish'
+  | 'xyWing'
+  | 'xyzWing'
+  | 'coloring'
+  | 'uniqueRectangle';
 
 export const TECHNIQUE_DIFFICULTY: Record<TechniqueName, Difficulty> = {
-  nakedSingle: 'easy', hiddenSingle: 'easy',
-  nakedPair: 'medium', nakedTriple: 'medium', hiddenPair: 'medium',
-  hiddenTriple: 'medium', pointingPair: 'medium',
-  nakedQuad: 'hard', hiddenQuad: 'hard', xWing: 'hard', boxLineReduction: 'hard',
-  swordfish: 'expert', xyWing: 'expert', xyzWing: 'expert',
-  coloring: 'expert', uniqueRectangle: 'expert',
+  nakedSingle: 'easy',
+  hiddenSingle: 'easy',
+  nakedPair: 'medium',
+  nakedTriple: 'medium',
+  hiddenPair: 'medium',
+  hiddenTriple: 'medium',
+  pointingPair: 'medium',
+  nakedQuad: 'hard',
+  hiddenQuad: 'hard',
+  xWing: 'hard',
+  boxLineReduction: 'hard',
+  swordfish: 'expert',
+  xyWing: 'expert',
+  xyzWing: 'expert',
+  coloring: 'expert',
+  uniqueRectangle: 'expert',
 };
 
 export type Step = {
   technique: TechniqueName;
-  highlights: CellCoord[];         // cells the user should look at
+  highlights: CellCoord[]; // cells the user should look at
   placements: { cell: CellCoord; digit: Digit }[];
   eliminations: { cell: CellCoord; digit: Digit }[];
-  explanation: string;             // one sentence
+  explanation: string; // one sentence
 };
 
 export type TechniqueDetector = (state: SolverState) => Step | null;
@@ -223,8 +245,8 @@ The solver works on an internal state with explicit candidate sets per cell (not
 ```ts
 // src/solver/types.ts (cont.)
 export type SolverState = {
-  values: (Digit | null)[][];        // 9x9
-  candidates: Set<Digit>[][];        // 9x9, valid candidates for each empty cell
+  values: (Digit | null)[][]; // 9x9
+  candidates: Set<Digit>[][]; // 9x9, valid candidates for each empty cell
 };
 ```
 
@@ -236,7 +258,7 @@ A hint is a Step plus a current disclosure level.
 // src/hints/types.ts
 export type Hint = {
   step: Step;
-  level: 0 | 1 | 2 | 3;              // current disclosure level
+  level: 0 | 1 | 2 | 3; // current disclosure level
 };
 ```
 
@@ -258,13 +280,13 @@ export type GameSnapshot = {
 export type Theme = 'auto' | 'light' | 'dark';
 
 export type Settings = {
-  autoCandidates: boolean;       // default false
-  possiblePlacements: boolean;   // default true
-  showTimer: boolean;            // default true
-  showMistakes: boolean;         // default true
-  theme: Theme;                  // default 'auto'
-  seenHintTooltip: boolean;      // default false
-  seenPencilTooltip: boolean;    // default false
+  autoCandidates: boolean; // default false
+  possiblePlacements: boolean; // default true
+  showTimer: boolean; // default true
+  showMistakes: boolean; // default true
+  theme: Theme; // default 'auto'
+  seenHintTooltip: boolean; // default false
+  seenPencilTooltip: boolean; // default false
 };
 ```
 
@@ -401,6 +423,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** A buildable, type-checked, lint-clean Vite + React + TS project that deploys "Hello Sudoku" to GitHub Pages.
 
 **Deliverables:**
+
 - `package.json` with React 18, TypeScript, Vite, Vitest, Playwright, ESLint, Prettier, Husky, lint-staged, Zustand.
 - `tsconfig.json` with strict mode.
 - `vite.config.ts` configured for the `/my-sudoku/` base path (GitHub Pages).
@@ -419,6 +442,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Foundational pure code — types, board manipulation primitives, and unit iteration helpers. All TDD, no UI.
 
 **Deliverables:**
+
 - `src/types.ts` with `Digit`, `CellCoord`, `Difficulty`, `Cell`, `Board`, `SolvedGrid`, `Puzzle`.
 - `src/solver/units.ts` — `rowsOf`, `colsOf`, `boxesOf`, `peersOf(coord)`, `unitsContaining(coord)`. All return `CellCoord[]` or `CellCoord[][]`.
 - `src/solver/candidates.ts` — `computeCandidates(values): Set<Digit>[][]`, `removeCandidateFromPeers(state, coord, digit)`.
@@ -431,6 +455,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** A working solver that can solve all easy-tier puzzles using naked singles and hidden singles. Establishes the technique interface and the main solver loop.
 
 **Deliverables:**
+
 - `src/solver/types.ts` with `TechniqueName`, `TECHNIQUE_DIFFICULTY`, `Step`, `SolverState`, `TechniqueDetector`.
 - `src/solver/techniques/nakedSingle.ts` and `hiddenSingle.ts` — each exports a `TechniqueDetector` that returns the first applicable step or null.
 - `src/solver/techniques/index.ts` — exports `ALL_TECHNIQUES` ordered by difficulty.
@@ -444,6 +469,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Solver handles medium-tier puzzles.
 
 **Deliverables:**
+
 - `nakedPair.ts`, `nakedTriple.ts`, `hiddenPair.ts`, `hiddenTriple.ts`, `pointingPair.ts`.
 - Each is TDD'd in isolation.
 - Solver test battery extended with medium puzzles.
@@ -455,6 +481,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Solver handles hard-tier puzzles.
 
 **Deliverables:**
+
 - `nakedQuad.ts`, `hiddenQuad.ts`, `xWing.ts`, `boxLineReduction.ts`.
 - TDD per technique.
 
@@ -465,6 +492,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Solver handles expert-tier puzzles.
 
 **Deliverables:**
+
 - `swordfish.ts`, `xyWing.ts`, `xyzWing.ts`, `coloring.ts`, `uniqueRectangle.ts`.
 - TDD per technique.
 
@@ -475,6 +503,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Generate puzzles of each difficulty tier, classified by their canonical solve path.
 
 **Deliverables:**
+
 - `src/generator/fullGrid.ts` — produce a random valid completed sudoku grid (random fill + backtracking).
 - `src/generator/digHoles.ts` — symmetric or random hole-digging while preserving uniqueness (verified by a brute-force solver or by the human solver detecting only one solution path).
 - `src/generator/difficulty.ts` — classify a puzzle by running the human solver and finding the hardest technique used.
@@ -488,6 +517,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Generation runs off the main thread, with a per-tier pre-generation cache.
 
 **Deliverables:**
+
 - `src/generator/worker.ts` — listens for `{ type: 'generate', difficulty }`, posts back `{ type: 'puzzle', difficulty, puzzle }`.
 - `src/generator/workerClient.ts` — main-thread API: `getPuzzle(difficulty): Promise<Puzzle>`, internally maintains a cache that auto-refills on consumption. Falls back to live generation if cache miss.
 - Vite worker integration (`new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' })`).
@@ -500,6 +530,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Zustand store managing all game state, with pure reducers for every action and full undo/redo.
 
 **Deliverables:**
+
 - `src/game/types.ts` with `GameState`, `GameSnapshot`.
 - `src/game/reducers.ts` — pure functions for each action (`placeDigit`, `eraseCell`, `togglePencilMark`, etc.). Each returns the new state.
 - `src/game/store.ts` — Zustand store wrapping the reducers; each action commits the previous state to the undo stack.
@@ -513,6 +544,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Render a static board from store state. No interaction yet — just visual.
 
 **Deliverables:**
+
 - `src/styles/tokens.css` — CSS custom properties for all colors (light + dark variants).
 - `src/game/Board.tsx` — 9x9 grid with thick 3x3 borders. CSS Grid, square aspect ratio.
 - `src/game/Cell.tsx` — renders a single cell: either the digit (bold for given, regular for entered) or a 3x3 grid of pencil marks. Subscribes to `state.cells[r][c]` slice only.
@@ -526,6 +558,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** User can select cells and place digits.
 
 **Deliverables:**
+
 - Click/tap a cell → store dispatches `selectCell`.
 - `src/game/keyboard.ts` — arrow keys move cursor, digits place, Shift+digit sets pencil mark, Backspace erases, Escape deselects.
 - Conflict detection on placement (no-op on the digit if it violates a rule? or place + highlight? — **place + highlight**, increment mistake counter).
@@ -539,6 +572,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Touch-friendly number entry with placement counters.
 
 **Deliverables:**
+
 - `src/game/NumberPad.tsx` — 1–9 buttons + erase. Each button shows a small counter of placements remaining.
 - Auto-disable button at zero remaining.
 - Pad-tap semantics:
@@ -553,6 +587,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Users can manually set/clear pencil marks; auto-removal on placement works.
 
 **Deliverables:**
+
 - Pencil mode toggle button in action bar.
 - `togglePencilMode` action; visual indicator on the toggle and the selected cell.
 - `togglePencilMark` reducer.
@@ -566,6 +601,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Setting toggle that switches pencil marks from user-owned to app-computed.
 
 **Deliverables:**
+
 - `settings.autoCandidates` toggle.
 - When on: pencil marks reflect computed candidates for every empty cell, recomputed on every placement.
 - When toggled on, populate pencil marks. When toggled off, leave current pencil marks in place (user takes over).
@@ -578,6 +614,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** All five highlight layers from §1.4 working together with the configured palette.
 
 **Deliverables:**
+
 - Derived state in the store or selectors: `getHighlights(state) → CellHighlightMap`.
 - CSS classes for each highlight type, color-blind-safe (brightness + hue).
 - `settings.possiblePlacements` toggle controls whether possible-placement highlights render.
@@ -590,6 +627,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Undo and redo buttons hooked up.
 
 **Deliverables:**
+
 - Buttons in action bar; disabled state based on stack contents.
 - Keyboard shortcuts: Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z (or Ctrl/Cmd+Y).
 - Tests.
@@ -601,7 +639,8 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Pick the easiest applicable technique, produce a 4-level progressive hint.
 
 **Deliverables:**
-- `src/hints/engine.ts` — given a `SolverState`, run techniques in order, return the first `Step` produced (this *is* the easiest applicable). Returns null if no technique applies.
+
+- `src/hints/engine.ts` — given a `SolverState`, run techniques in order, return the first `Step` produced (this _is_ the easiest applicable). Returns null if no technique applies.
 - `src/hints/HintPanel.tsx` — renders the current hint at its current disclosure level. "Show more" advances the level. Level 4 dispatches a placement.
 - `currentHint` and `hintLevel` in game store.
 - Tests on engine; component tests on panel.
@@ -613,6 +652,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** "What is this technique?" link opens a per-technique explainer modal.
 
 **Deliverables:**
+
 - `src/hints/explainers/` — one component per technique, each ~one screen of text + a small SVG diagram.
 - `src/hints/TechniqueExplainer.tsx` — modal that renders the requested technique's explainer.
 - Linked from level 2 and 3 of the hint panel.
@@ -624,6 +664,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Timer counting up, pausable; mistakes counter incrementing on rule violations.
 
 **Deliverables:**
+
 - Timer logic in the store (`elapsedMs`, `paused`, `pausedAt`). `useEffect` in a top-level component drives the tick (every 1s when not paused).
 - Pause blanks the grid (CSS overlay).
 - Mistake counter increments on rule-violating placement.
@@ -637,6 +678,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** All settings exposed in a gear-icon modal.
 
 **Deliverables:**
+
 - `src/settings/store.ts` — Zustand store with localStorage persistence middleware.
 - `src/settings/SettingsModal.tsx` — toggle UI for every setting.
 - `src/settings/theme.ts` — applies `data-theme` on `<html>` based on setting + `prefers-color-scheme`.
@@ -649,6 +691,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** First-load and new-game UX.
 
 **Deliverables:**
+
 - `src/landing/LandingScreen.tsx` — difficulty picker, with "Resume" button if a saved game exists.
 - Mid-game "New game" button triggers a confirm dialog.
 - First-time tooltips on Hint and Pencil-mode buttons; dismiss on first use; track in settings.
@@ -661,6 +704,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Detect completion, show win modal with stats.
 
 **Deliverables:**
+
 - Completion check after every placement (board is fully filled AND no conflicts).
 - `src/win/WinModal.tsx` — displays time, mistakes, hints used, difficulty, "New game" button (defaults to same difficulty).
 - Brief confetti via `src/ui/Confetti.tsx`. Skipped if `prefers-reduced-motion`.
@@ -672,6 +716,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Meet the a11y baseline from §6.
 
 **Deliverables:**
+
 - ARIA labels on every cell ("Row 4, column 7, contains 5, given" / "empty").
 - Live region announces hints and conflict highlights.
 - Focus ring visible on every interactive element.
@@ -685,6 +730,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Mobile-first layout works on phones (portrait + landscape) and desktops.
 
 **Deliverables:**
+
 - Mobile portrait: header → grid → number pad → action bar.
 - Mobile landscape: side-panel-style layout.
 - Desktop ≥ 768px: side panel right, grid capped at ~600px.
@@ -697,6 +743,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 **Goal:** Smoke test covering the happy path; manual QA pass; ship.
 
 **Deliverables:**
+
 - `tests/e2e/smoke.spec.ts` — start expert game, place digits, take a hint, undo, solve, see win modal.
 - Manual QA checklist covering every feature in §1.
 - Bundle size sanity check.
@@ -719,6 +766,7 @@ Each phase is a unit of work that produces working, testable software. Before st
 ### 5.2 TDD Discipline
 
 Every solver technique and every reducer is written test-first. Workflow:
+
 1. Write the failing test (with a hand-crafted board state and expected step/state).
 2. Run it; confirm failure.
 3. Implement the minimal code to pass.
@@ -728,6 +776,7 @@ Every solver technique and every reducer is written test-first. Workflow:
 ### 5.3 Test Data
 
 A test-fixtures directory contains:
+
 - Hand-crafted board states per technique (one for each positive and negative case).
 - Curated full puzzles per tier with their expected technique sequences.
 - These are versioned in the repo as part of the testing canon.
