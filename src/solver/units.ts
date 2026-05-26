@@ -7,35 +7,41 @@ export function boxIndexOf(coord: CellCoord): number {
   return Math.floor(coord.row / BOX) * BOX + Math.floor(coord.col / BOX);
 }
 
-const ROWS: CellCoord[][] = Array.from({ length: SIZE }, (_, row) =>
-  Array.from({ length: SIZE }, (_, col) => ({ row, col })),
+const ROWS: ReadonlyArray<ReadonlyArray<CellCoord>> = Object.freeze(
+  Array.from({ length: SIZE }, (_, row) =>
+    Object.freeze(Array.from({ length: SIZE }, (_, col) => ({ row, col }))),
+  ),
 );
 
-const COLS: CellCoord[][] = Array.from({ length: SIZE }, (_, col) =>
-  Array.from({ length: SIZE }, (_, row) => ({ row, col })),
+const COLS: ReadonlyArray<ReadonlyArray<CellCoord>> = Object.freeze(
+  Array.from({ length: SIZE }, (_, col) =>
+    Object.freeze(Array.from({ length: SIZE }, (_, row) => ({ row, col }))),
+  ),
 );
 
-const BOXES: CellCoord[][] = Array.from({ length: SIZE }, (_, b) => {
-  const rowStart = Math.floor(b / BOX) * BOX;
-  const colStart = (b % BOX) * BOX;
-  const cells: CellCoord[] = [];
-  for (let dr = 0; dr < BOX; dr++) {
-    for (let dc = 0; dc < BOX; dc++) {
-      cells.push({ row: rowStart + dr, col: colStart + dc });
+const BOXES: ReadonlyArray<ReadonlyArray<CellCoord>> = Object.freeze(
+  Array.from({ length: SIZE }, (_, b) => {
+    const rowStart = Math.floor(b / BOX) * BOX;
+    const colStart = (b % BOX) * BOX;
+    const cells: CellCoord[] = [];
+    for (let dr = 0; dr < BOX; dr++) {
+      for (let dc = 0; dc < BOX; dc++) {
+        cells.push({ row: rowStart + dr, col: colStart + dc });
+      }
     }
-  }
-  return cells;
-});
+    return Object.freeze(cells);
+  }),
+);
 
-export function rowsOf(): CellCoord[][] {
+export function rowsOf(): ReadonlyArray<ReadonlyArray<CellCoord>> {
   return ROWS;
 }
 
-export function colsOf(): CellCoord[][] {
+export function colsOf(): ReadonlyArray<ReadonlyArray<CellCoord>> {
   return COLS;
 }
 
-export function boxesOf(): CellCoord[][] {
+export function boxesOf(): ReadonlyArray<ReadonlyArray<CellCoord>> {
   return BOXES;
 }
 
@@ -66,6 +72,6 @@ export function peersOf(coord: CellCoord): CellCoord[] {
   return PEERS[coord.row * SIZE + coord.col]!;
 }
 
-export function unitsContaining(coord: CellCoord): CellCoord[][] {
+export function unitsContaining(coord: CellCoord): ReadonlyArray<ReadonlyArray<CellCoord>> {
   return [ROWS[coord.row]!, COLS[coord.col]!, BOXES[boxIndexOf(coord)]!];
 }

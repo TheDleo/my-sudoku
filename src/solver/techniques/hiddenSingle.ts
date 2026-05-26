@@ -6,7 +6,11 @@ const DIGITS: Digit[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 type UnitKind = 'row' | 'column' | 'box';
 
-function scanUnits(state: SolverState, units: CellCoord[][], kind: UnitKind): Step | null {
+function scanUnits(
+  state: SolverState,
+  units: ReadonlyArray<ReadonlyArray<CellCoord>>,
+  kind: UnitKind,
+): Step | null {
   for (let u = 0; u < units.length; u++) {
     const unit = units[u]!;
     for (const digit of DIGITS) {
