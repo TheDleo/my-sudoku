@@ -8,6 +8,7 @@ import { hiddenTriple } from './hiddenTriple';
 import { pointingPair } from './pointingPair';
 import { nakedQuad } from './nakedQuad';
 import { hiddenQuad } from './hiddenQuad';
+import { boxLineReduction } from './boxLineReduction';
 
 export const ALL_TECHNIQUES: TechniqueDetector[] = [
   nakedSingle,
@@ -19,4 +20,5 @@ export const ALL_TECHNIQUES: TechniqueDetector[] = [
   pointingPair,
   nakedQuad,
   hiddenQuad,
+  boxLineReduction,
 ];
