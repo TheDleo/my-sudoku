@@ -5,6 +5,7 @@ import { nakedPair } from './nakedPair';
 import { nakedTriple } from './nakedTriple';
 import { hiddenPair } from './hiddenPair';
 import { hiddenTriple } from './hiddenTriple';
+import { pointingPair } from './pointingPair';
 
 export const ALL_TECHNIQUES: TechniqueDetector[] = [
   nakedSingle,
@@ -13,4 +14,5 @@ export const ALL_TECHNIQUES: TechniqueDetector[] = [
   nakedTriple,
   hiddenPair,
   hiddenTriple,
+  pointingPair,
 ];
