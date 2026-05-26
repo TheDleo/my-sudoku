@@ -60,7 +60,7 @@ function scanForHiddenTriple(
             highlights: cellsInTriple,
             placements: [],
             eliminations,
-            explanation: `In ${kind} ${u + 1}, digits ${sortedDigits.join(', ')} can only go in three cells; other candidates can be removed from those cells.`,
+            explanation: `In ${kind} ${u + 1}, digits ${sortedDigits.join(', ')} can only go in cells (${cellsInTriple[0]!.row + 1}, ${cellsInTriple[0]!.col + 1}), (${cellsInTriple[1]!.row + 1}, ${cellsInTriple[1]!.col + 1}), and (${cellsInTriple[2]!.row + 1}, ${cellsInTriple[2]!.col + 1}); other candidates can be removed from those cells.`,
           };
         }
       }

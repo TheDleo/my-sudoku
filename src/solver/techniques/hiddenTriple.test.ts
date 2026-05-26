@@ -51,6 +51,9 @@ describe('hiddenTriple', () => {
     expect(step?.eliminations).toContainEqual({ cell: { row: 0, col: 0 }, digit: 1 });
     expect(step?.eliminations).toContainEqual({ cell: { row: 0, col: 2 }, digit: 9 });
     expect(step?.eliminations).toContainEqual({ cell: { row: 0, col: 5 }, digit: 3 });
+    expect(step?.explanation).toMatch(/\(1, 1\)/);
+    expect(step?.explanation).toMatch(/\(1, 3\)/);
+    expect(step?.explanation).toMatch(/\(1, 6\)/);
   });
 
   it('finds a hidden triple in a column', () => {

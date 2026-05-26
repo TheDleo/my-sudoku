@@ -48,6 +48,9 @@ describe('nakedTriple', () => {
         { row: 0, col: 2 },
       ]),
     );
+    expect(step?.explanation).toMatch(/\(1, 1\)/);
+    expect(step?.explanation).toMatch(/\(1, 2\)/);
+    expect(step?.explanation).toMatch(/\(1, 3\)/);
   });
 
   it('finds a naked triple with all three cells {a,b,c} (full triple)', () => {

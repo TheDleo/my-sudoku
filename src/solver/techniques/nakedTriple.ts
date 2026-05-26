@@ -51,7 +51,7 @@ function scanForNakedTriple(
             highlights: [a.coord, b.coord, c.coord],
             placements: [],
             eliminations,
-            explanation: `Three cells in ${kind} ${u + 1} must contain ${sortedDigits.join(', ')}, eliminating those digits from the rest of the ${kind}.`,
+            explanation: `Cells (${a.coord.row + 1}, ${a.coord.col + 1}), (${b.coord.row + 1}, ${b.coord.col + 1}), and (${c.coord.row + 1}, ${c.coord.col + 1}) in ${kind} ${u + 1} must contain ${sortedDigits.join(', ')}, eliminating those digits from the rest of the ${kind}.`,
           };
         }
       }
