@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { Digit } from '../types';
+import type { TechniqueName } from './types';
 import { solve } from './solve';
 
 // A puzzle solvable purely by naked + hidden singles.
@@ -69,5 +70,78 @@ describe('solve', () => {
     for (const step of result.steps) {
       expect(step.placements.length).toBeGreaterThanOrEqual(1);
     }
+  });
+});
+
+// --- Phase 4 medium-puzzle integration test ---
+
+function isValidCompleteGrid(values: (Digit | null)[][]): boolean {
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      if (values[r]![c] === null) return false;
+    }
+  }
+  for (let r = 0; r < 9; r++) {
+    const seen = new Set<Digit>();
+    for (let c = 0; c < 9; c++) seen.add(values[r]![c] as Digit);
+    if (seen.size !== 9) return false;
+  }
+  for (let c = 0; c < 9; c++) {
+    const seen = new Set<Digit>();
+    for (let r = 0; r < 9; r++) seen.add(values[r]![c] as Digit);
+    if (seen.size !== 9) return false;
+  }
+  for (let br = 0; br < 3; br++) {
+    for (let bc = 0; bc < 3; bc++) {
+      const seen = new Set<Digit>();
+      for (let dr = 0; dr < 3; dr++) {
+        for (let dc = 0; dc < 3; dc++) {
+          seen.add(values[br * 3 + dr]![bc * 3 + dc] as Digit);
+        }
+      }
+      if (seen.size !== 9) return false;
+    }
+  }
+  return true;
+}
+
+const MEDIUM_TECHNIQUES: TechniqueName[] = [
+  'nakedPair',
+  'nakedTriple',
+  'hiddenPair',
+  'hiddenTriple',
+  'pointingPair',
+];
+
+const MEDIUM_PUZZLE: (Digit | null)[][] = [
+  [4, null, null, null, null, null, 8, null, 5],
+  [null, 3, null, null, null, null, null, null, null],
+  [null, null, null, 7, null, null, null, null, null],
+  [null, 2, null, null, null, null, null, 6, null],
+  [null, null, null, null, 8, null, 4, null, null],
+  [null, null, null, null, 1, null, null, null, null],
+  [null, null, null, 6, null, 3, null, 7, null],
+  [5, null, null, 2, null, null, null, null, null],
+  [1, null, 4, null, null, null, null, null, null],
+];
+
+describe('solve — medium puzzle integration', () => {
+  it('solves the curated medium puzzle to a valid completed grid', () => {
+    const result = solve(MEDIUM_PUZZLE);
+    expect(result.solved).toBe(true);
+    expect(isValidCompleteGrid(result.state.values)).toBe(true);
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        const given = MEDIUM_PUZZLE[r]![c];
+        if (given !== null) expect(result.state.values[r]![c]).toBe(given);
+      }
+    }
+  });
+
+  it('uses at least one Phase 4 technique on the medium puzzle', () => {
+    const result = solve(MEDIUM_PUZZLE);
+    const usedTechniques = new Set(result.steps.map((s) => s.technique));
+    const usedMedium = MEDIUM_TECHNIQUES.some((t) => usedTechniques.has(t));
+    expect(usedMedium).toBe(true);
   });
 });
