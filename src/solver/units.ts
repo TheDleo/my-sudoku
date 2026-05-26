@@ -38,3 +38,34 @@ export function colsOf(): CellCoord[][] {
 export function boxesOf(): CellCoord[][] {
   return BOXES;
 }
+
+const PEERS: CellCoord[][] = (() => {
+  const cache: CellCoord[][] = [];
+  for (let r = 0; r < SIZE; r++) {
+    for (let c = 0; c < SIZE; c++) {
+      const self = { row: r, col: c };
+      const seen = new Set<string>();
+      const out: CellCoord[] = [];
+      const consider = (coord: CellCoord) => {
+        if (coord.row === self.row && coord.col === self.col) return;
+        const key = `${coord.row},${coord.col}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        out.push(coord);
+      };
+      for (const cell of ROWS[r]!) consider(cell);
+      for (const cell of COLS[c]!) consider(cell);
+      for (const cell of BOXES[boxIndexOf(self)]!) consider(cell);
+      cache[r * SIZE + c] = out;
+    }
+  }
+  return cache;
+})();
+
+export function peersOf(coord: CellCoord): CellCoord[] {
+  return PEERS[coord.row * SIZE + coord.col]!;
+}
+
+export function unitsContaining(coord: CellCoord): CellCoord[][] {
+  return [ROWS[coord.row]!, COLS[coord.col]!, BOXES[boxIndexOf(coord)]!];
+}
