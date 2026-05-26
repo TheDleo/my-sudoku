@@ -1,22 +1,10 @@
 import type { CellCoord, Digit } from '../../types';
 import { rowsOf, colsOf, boxesOf } from '../units';
 import type { Elimination, SolverState, Step, TechniqueDetector } from '../types';
+import { cellsWithDigit } from './shared';
 
 const DIGITS: Digit[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 type UnitKind = 'row' | 'column' | 'box';
-
-function cellsWithDigit(
-  state: SolverState,
-  unit: ReadonlyArray<CellCoord>,
-  digit: Digit,
-): CellCoord[] {
-  const out: CellCoord[] = [];
-  for (const coord of unit) {
-    if (state.values[coord.row]![coord.col] !== null) continue;
-    if (state.candidates[coord.row]![coord.col]!.has(digit)) out.push(coord);
-  }
-  return out;
-}
 
 function sameTwoCells(a: CellCoord[], b: CellCoord[]): boolean {
   if (a.length !== 2 || b.length !== 2) return false;
