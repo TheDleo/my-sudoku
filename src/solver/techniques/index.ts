@@ -10,6 +10,7 @@ import { nakedQuad } from './nakedQuad';
 import { hiddenQuad } from './hiddenQuad';
 import { boxLineReduction } from './boxLineReduction';
 import { xWing } from './xWing';
+import { swordfish } from './swordfish';
 
 export const ALL_TECHNIQUES: TechniqueDetector[] = [
   nakedSingle,
@@ -23,4 +24,5 @@ export const ALL_TECHNIQUES: TechniqueDetector[] = [
   hiddenQuad,
   boxLineReduction,
   xWing,
+  swordfish,
 ];
