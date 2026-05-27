@@ -185,3 +185,47 @@ describe('solve — hard puzzle integration', () => {
     expect(usedHard).toBe(true);
   });
 });
+
+// --- Phase 6 expert-puzzle integration test ---
+
+const EXPERT_TECHNIQUES = [
+  'swordfish',
+  'xyWing',
+  'xyzWing',
+  'uniqueRectangle',
+  'coloring',
+] as const;
+
+// Expert-tier puzzle verified to require XY-Wing to solve fully. 49 steps total.
+const EXPERT_PUZZLE: (Digit | null)[][] = [
+  [9, null, null, 2, 4, null, null, null, null],
+  [null, 5, null, 6, 9, null, 2, 3, 1],
+  [null, 2, null, null, 5, null, null, 9, null],
+  [null, 9, null, 7, null, null, 3, 2, null],
+  [null, null, 2, 9, 3, 5, 6, null, 7],
+  [null, 7, null, null, null, 2, 9, null, null],
+  [null, 6, 9, null, 2, null, null, 7, 3],
+  [5, 1, null, null, 7, 9, null, null, 2],
+  [2, null, 7, null, 8, null, null, null, 9],
+];
+
+describe('solve — expert puzzle integration', () => {
+  it('solves the curated expert puzzle to a valid completed grid', () => {
+    const result = solve(EXPERT_PUZZLE);
+    expect(result.solved).toBe(true);
+    expect(isValidCompleteGrid(result.state.values)).toBe(true);
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        const given = EXPERT_PUZZLE[r]![c];
+        if (given !== null) expect(result.state.values[r]![c]).toBe(given);
+      }
+    }
+  });
+
+  it('uses at least one Phase 6 expert technique on the expert puzzle', () => {
+    const result = solve(EXPERT_PUZZLE);
+    const usedTechniques = new Set(result.steps.map((s) => s.technique));
+    const usedExpert = EXPERT_TECHNIQUES.some((t) => usedTechniques.has(t));
+    expect(usedExpert).toBe(true);
+  });
+});
