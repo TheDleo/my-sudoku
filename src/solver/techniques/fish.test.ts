@@ -90,15 +90,35 @@ describe('scanFish', () => {
   it('finds a column-direction fish (transpose of row case)', () => {
     const state = emptyState();
     clearAllCandidates(state);
+    // Digit 6 in column 0 only at (0,0) and (4,0) - no other rows have it in column 0.
     state.candidates[0]![0] = new Set<Digit>([6, 7]);
     state.candidates[4]![0] = new Set<Digit>([6, 8]);
+    // Digit 6 in column 5 only at (0,5) and (4,5) - no other rows have it in column 5.
     state.candidates[0]![5] = new Set<Digit>([6, 1]);
     state.candidates[4]![5] = new Set<Digit>([6, 2]);
-    for (const r of [1, 2, 3, 5, 6, 7, 8]) {
-      state.candidates[r]![0] = new Set<Digit>([6, 1]);
-      state.candidates[r]![5] = new Set<Digit>([6, 2]);
-      state.candidates[r]![3] = new Set<Digit>([6, 7]);
-    }
+    // Add digit 6 to columns 1-4, 6-8 in rows 0 and 4 (eliminable candidates for col-fish).
+    state.candidates[0]![1] = new Set<Digit>([6, 2]);
+    state.candidates[0]![2] = new Set<Digit>([6, 3]);
+    state.candidates[0]![3] = new Set<Digit>([6, 4]);
+    state.candidates[0]![4] = new Set<Digit>([6, 5]);
+    state.candidates[0]![6] = new Set<Digit>([6, 7]);
+    state.candidates[0]![7] = new Set<Digit>([6, 8]);
+    state.candidates[0]![8] = new Set<Digit>([6, 9]);
+    state.candidates[4]![1] = new Set<Digit>([6, 2]);
+    state.candidates[4]![2] = new Set<Digit>([6, 3]);
+    state.candidates[4]![3] = new Set<Digit>([6, 4]);
+    state.candidates[4]![4] = new Set<Digit>([6, 5]);
+    state.candidates[4]![6] = new Set<Digit>([6, 7]);
+    state.candidates[4]![7] = new Set<Digit>([6, 8]);
+    state.candidates[4]![8] = new Set<Digit>([6, 9]);
+    // Column 7 also has digit 6 in rows 1-8 (many rows, so column 7 is not a col-fish candidate).
+    state.candidates[1]![7] = new Set<Digit>([6, 2]);
+    state.candidates[2]![7] = new Set<Digit>([6, 3]);
+    state.candidates[3]![7] = new Set<Digit>([6, 4]);
+    state.candidates[5]![7] = new Set<Digit>([6, 5]);
+    state.candidates[6]![7] = new Set<Digit>([6, 6]);
+    state.candidates[7]![7] = new Set<Digit>([6, 7]);
+    state.candidates[8]![7] = new Set<Digit>([6, 8]);
     const step = scanFish(state, 6, 2, 'xWing');
     expect(step?.technique).toBe('xWing');
     expect(step?.eliminations.length).toBe(14);
