@@ -53,7 +53,6 @@ export const uniqueRectangle: TechniqueDetector = (state: SolverState): Step | n
             if (!setEquals(floor1, floorDigits)) continue;
             if (!setEquals(floor2, floorDigits)) continue;
             if (!setHasBoth(roofCand, a, b)) continue;
-            if (roofCand.size < 3) continue;
             const roofCoord = corners[roofIdx]!;
             const eliminations: Elimination[] = [
               { cell: roofCoord, digit: a },

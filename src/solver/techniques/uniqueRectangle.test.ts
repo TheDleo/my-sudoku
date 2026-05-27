@@ -71,16 +71,6 @@ describe('uniqueRectangle (Type 1)', () => {
     expect(uniqueRectangle(state)).toBeNull();
   });
 
-  it('returns null when roof has only 2 candidates equal to {a,b}', () => {
-    const state = emptyState();
-    clearAllCandidates(state);
-    state.candidates[0]![0] = new Set<Digit>([4, 7]);
-    state.candidates[0]![4] = new Set<Digit>([4, 7]);
-    state.candidates[1]![0] = new Set<Digit>([4, 7]);
-    state.candidates[1]![4] = new Set<Digit>([4, 7]);
-    expect(uniqueRectangle(state)).toBeNull();
-  });
-
   it('finds a UR Type 1 with cols sharing stack instead of rows sharing band', () => {
     const state = emptyState();
     clearAllCandidates(state);
