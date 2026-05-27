@@ -13,6 +13,7 @@ import { xWing } from './xWing';
 import { swordfish } from './swordfish';
 import { xyWing } from './xyWing';
 import { xyzWing } from './xyzWing';
+import { uniqueRectangle } from './uniqueRectangle';
 
 export const ALL_TECHNIQUES: TechniqueDetector[] = [
   nakedSingle,
@@ -29,4 +30,5 @@ export const ALL_TECHNIQUES: TechniqueDetector[] = [
   swordfish,
   xyWing,
   xyzWing,
+  uniqueRectangle,
 ];
