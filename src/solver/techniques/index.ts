@@ -12,6 +12,7 @@ import { boxLineReduction } from './boxLineReduction';
 import { xWing } from './xWing';
 import { swordfish } from './swordfish';
 import { xyWing } from './xyWing';
+import { xyzWing } from './xyzWing';
 
 export const ALL_TECHNIQUES: TechniqueDetector[] = [
   nakedSingle,
@@ -27,4 +28,5 @@ export const ALL_TECHNIQUES: TechniqueDetector[] = [
   xWing,
   swordfish,
   xyWing,
+  xyzWing,
 ];
