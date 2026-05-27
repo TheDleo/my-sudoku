@@ -145,3 +145,43 @@ describe('solve — medium puzzle integration', () => {
     expect(usedMedium).toBe(true);
   });
 });
+
+// --- Phase 5 hard-puzzle integration test ---
+
+const HARD_TECHNIQUES = ['nakedQuad', 'hiddenQuad', 'boxLineReduction', 'xWing'] as const;
+
+// A hard-tier puzzle from the Project Euler problem 96 puzzle set (puzzle #7).
+// Verified to solve completely (63 steps) and to exercise both boxLineReduction
+// (step 13) and xWing (step 19), as well as pointingPair and nakedPair/hiddenPair.
+const HARD_PUZZLE: (Digit | null)[][] = [
+  [null, 4, 3, null, 8, null, 2, 5, null],
+  [6, null, null, null, null, null, null, null, null],
+  [null, null, null, null, null, 1, null, 9, 4],
+  [9, null, null, null, null, 4, null, 7, null],
+  [null, null, null, 6, null, 8, null, null, null],
+  [null, 1, null, 2, null, null, null, null, 3],
+  [8, 2, null, 5, null, null, null, null, null],
+  [null, null, null, null, null, null, null, null, 5],
+  [null, 3, 4, null, 9, null, 7, 1, null],
+];
+
+describe('solve — hard puzzle integration', () => {
+  it('solves the curated hard puzzle to a valid completed grid', () => {
+    const result = solve(HARD_PUZZLE);
+    expect(result.solved).toBe(true);
+    expect(isValidCompleteGrid(result.state.values)).toBe(true);
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        const given = HARD_PUZZLE[r]![c];
+        if (given !== null) expect(result.state.values[r]![c]).toBe(given);
+      }
+    }
+  });
+
+  it('uses at least one Phase 5 hard technique on the hard puzzle', () => {
+    const result = solve(HARD_PUZZLE);
+    const usedTechniques = new Set(result.steps.map((s) => s.technique));
+    const usedHard = HARD_TECHNIQUES.some((t) => usedTechniques.has(t));
+    expect(usedHard).toBe(true);
+  });
+});
