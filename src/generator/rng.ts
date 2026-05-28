@@ -2,8 +2,8 @@
  * mulberry32: small, fast, seedable PRNG. Returns a function that yields
  * uniformly distributed floats in [0, 1).
  *
- * Source: https://en.wikipedia.org/wiki/Linear_congruential_generator (mulberry32 variant).
- * Used by tests for deterministic generation.
+ * Source: bryc, https://github.com/bryc/code/blob/master/jshash/PRNGs.md#mulberry32
+ * (xorshift/multiply mixer in the Murmur3 family). Used by tests for deterministic generation.
  */
 export function mulberry32(seed: number): () => number {
   let s = seed >>> 0;
