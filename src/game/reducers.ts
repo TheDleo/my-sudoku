@@ -88,5 +88,54 @@ export function togglePencilMode(state: GameState): GameState {
   return { ...state, pencilMode: !state.pencilMode };
 }
 
+export function withSnapshot(state: GameState, mutate: (s: GameState) => GameState): GameState {
+  const snapshot: GameSnapshot = {
+    cells: cloneCells(state.cells),
+    pencilMode: state.pencilMode,
+  };
+  const next = mutate(state);
+  if (next === state) return state;
+  return {
+    ...next,
+    history: { past: [...state.history.past, snapshot], future: [] },
+  };
+}
+
+export function undo(state: GameState): GameState {
+  if (state.history.past.length === 0) return state;
+  const snapshot = state.history.past[state.history.past.length - 1]!;
+  const current: GameSnapshot = {
+    cells: cloneCells(state.cells),
+    pencilMode: state.pencilMode,
+  };
+  return {
+    ...state,
+    cells: snapshot.cells,
+    pencilMode: snapshot.pencilMode,
+    history: {
+      past: state.history.past.slice(0, -1),
+      future: [...state.history.future, current],
+    },
+  };
+}
+
+export function redo(state: GameState): GameState {
+  if (state.history.future.length === 0) return state;
+  const snapshot = state.history.future[state.history.future.length - 1]!;
+  const current: GameSnapshot = {
+    cells: cloneCells(state.cells),
+    pencilMode: state.pencilMode,
+  };
+  return {
+    ...state,
+    cells: snapshot.cells,
+    pencilMode: snapshot.pencilMode,
+    history: {
+      past: [...state.history.past, current],
+      future: state.history.future.slice(0, -1),
+    },
+  };
+}
+
 // Re-export shared types for convenience.
 export type { GameSnapshot, GameState };

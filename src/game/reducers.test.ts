@@ -5,10 +5,13 @@ import {
   initialEmptyState,
   loadPuzzle,
   placeDigit,
+  redo,
   selectCell,
   setSelectedNumber,
   togglePencilMark,
   togglePencilMode,
+  undo,
+  withSnapshot,
 } from './reducers';
 import { cloneCells as cloneCellsForTest } from './helpers';
 
@@ -243,5 +246,101 @@ describe('togglePencilMode', () => {
     expect(togglePencilMode(initialEmptyState).pencilMode).toBe(true);
     const on = togglePencilMode(initialEmptyState);
     expect(togglePencilMode(on).pencilMode).toBe(false);
+  });
+});
+
+describe('withSnapshot', () => {
+  it('pushes the pre-action snapshot onto past when the reducer changes state', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const next = withSnapshot(selected, (s) => placeDigit(s, 3 as Digit));
+    expect(next.history.past.length).toBe(1);
+    expect(next.history.past[0]!.cells[1]![1]!.value).toBe(null); // pre-action snapshot
+    expect(next.history.future).toEqual([]); // future cleared on new action
+  });
+
+  it('does not push a snapshot when the reducer returns the same reference (no-op)', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 0, col: 0 }); // given cell
+    const next = withSnapshot(selected, (s) => placeDigit(s, 3 as Digit));
+    expect(next).toBe(selected);
+    expect(next.history.past).toEqual([]);
+  });
+
+  it('clears the future array on any new mutating action', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const seeded = {
+      ...selected,
+      history: {
+        past: [],
+        future: [{ cells: selected.cells, pencilMode: false }],
+      },
+    };
+    const next = withSnapshot(seeded, (s) => placeDigit(s, 5 as Digit));
+    expect(next.history.future).toEqual([]);
+  });
+});
+
+describe('undo', () => {
+  it('returns same reference when past is empty', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    expect(undo(loaded)).toBe(loaded);
+  });
+
+  it('reverts the most recent mutating action', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const placed = withSnapshot(selected, (s) => placeDigit(s, 3 as Digit));
+    const reverted = undo(placed);
+    expect(reverted.cells[1]![1]!.value).toBe(null);
+    expect(reverted.history.past).toEqual([]);
+    expect(reverted.history.future.length).toBe(1);
+  });
+
+  it('preserves selection across undo', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const placed = withSnapshot(selected, (s) => placeDigit(s, 3 as Digit));
+    const moved = selectCell(placed, { row: 4, col: 4 });
+    const reverted = undo(moved);
+    expect(reverted.selection.cell).toEqual({ row: 4, col: 4 });
+  });
+});
+
+describe('redo', () => {
+  it('returns same reference when future is empty', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    expect(redo(loaded)).toBe(loaded);
+  });
+
+  it('redoes a previously undone action', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const placed = withSnapshot(selected, (s) => placeDigit(s, 3 as Digit));
+    const undone = undo(placed);
+    const redone = redo(undone);
+    expect(redone.cells[1]![1]!.value).toBe(3);
+    expect(redone.history.past.length).toBe(1);
+    expect(redone.history.future).toEqual([]);
+  });
+
+  it('round-trip: placeDigit -> undo -> redo restores the digit', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const placed = withSnapshot(selected, (s) => placeDigit(s, 3 as Digit));
+    expect(redo(undo(placed)).cells[1]![1]!.value).toBe(3);
+  });
+
+  it('round-trip: eraseCell pencil marks -> undo restores them', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const withMarks = withSnapshot(selected, (s) => togglePencilMark(s, 3 as Digit));
+    const withMore = withSnapshot(withMarks, (s) => togglePencilMark(s, 5 as Digit));
+    const erased = withSnapshot(withMore, eraseCell);
+    expect(erased.cells[1]![1]!.pencilMarks.size).toBe(0);
+    const reverted = undo(erased);
+    expect(reverted.cells[1]![1]!.pencilMarks.has(3 as Digit)).toBe(true);
+    expect(reverted.cells[1]![1]!.pencilMarks.has(5 as Digit)).toBe(true);
   });
 });
