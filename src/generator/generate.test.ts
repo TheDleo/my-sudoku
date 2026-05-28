@@ -54,3 +54,29 @@ describe('generate', () => {
     expect(() => generate('expert', { rng: mulberry32(1), maxAttempts: 0 })).toThrow();
   });
 });
+
+describe('generate — time budget', () => {
+  it(
+    'generate("expert") completes within 30 seconds',
+    () => {
+      const start = Date.now();
+      const puzzle = generate('expert');
+      const elapsed = Date.now() - start;
+      expect(puzzle.difficulty).toBe('expert');
+      expect(elapsed).toBeLessThan(30_000);
+    },
+    { timeout: 45_000 },
+  );
+
+  it(
+    'generate("easy") completes within 5 seconds',
+    () => {
+      const start = Date.now();
+      const puzzle = generate('easy');
+      const elapsed = Date.now() - start;
+      expect(puzzle.difficulty).toBe('easy');
+      expect(elapsed).toBeLessThan(5_000);
+    },
+    { timeout: 10_000 },
+  );
+});
