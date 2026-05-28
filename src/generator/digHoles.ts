@@ -1,16 +1,8 @@
 import type { Digit } from '../types';
 import { hasUniqueSolution } from './uniqueness';
+import { shuffleInPlace } from './shared';
 
 const SIZE = 9;
-
-function shuffleInPlace<T>(arr: T[], rng: () => number): void {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    const tmp = arr[i]!;
-    arr[i] = arr[j]!;
-    arr[j] = tmp;
-  }
-}
 
 /**
  * Returns a grid derived from `full` by removing as many cells as possible

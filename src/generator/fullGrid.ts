@@ -1,16 +1,8 @@
 import type { Digit } from '../types';
+import { shuffleInPlace } from './shared';
 
 const SIZE = 9;
 const DIGITS: Digit[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-function shuffleInPlace<T>(arr: T[], rng: () => number): void {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    const tmp = arr[i]!;
-    arr[i] = arr[j]!;
-    arr[j] = tmp;
-  }
-}
 
 function isValidPlacement(grid: (Digit | null)[][], r: number, c: number, digit: Digit): boolean {
   for (let i = 0; i < SIZE; i++) {
