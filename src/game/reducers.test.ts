@@ -7,6 +7,8 @@ import {
   placeDigit,
   selectCell,
   setSelectedNumber,
+  togglePencilMark,
+  togglePencilMode,
 } from './reducers';
 import { cloneCells as cloneCellsForTest } from './helpers';
 
@@ -198,5 +200,48 @@ describe('eraseCell', () => {
   it('returns the same reference when no cell is selected', () => {
     const loaded = loadPuzzle(initialEmptyState, makePuzzle());
     expect(eraseCell(loaded)).toBe(loaded);
+  });
+});
+
+describe('togglePencilMark', () => {
+  it('adds the digit when absent', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const next = togglePencilMark(selected, 5 as Digit);
+    expect(next.cells[1]![1]!.pencilMarks.has(5 as Digit)).toBe(true);
+  });
+
+  it('removes the digit when present', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const added = togglePencilMark(selected, 5 as Digit);
+    const removed = togglePencilMark(added, 5 as Digit);
+    expect(removed.cells[1]![1]!.pencilMarks.has(5 as Digit)).toBe(false);
+  });
+
+  it('returns same reference when cell is given', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 0, col: 0 }); // given
+    expect(togglePencilMark(selected, 3 as Digit)).toBe(selected);
+  });
+
+  it('returns same reference when cell has a value', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const withDigit = placeDigit(selected, 7 as Digit);
+    expect(togglePencilMark(withDigit, 3 as Digit)).toBe(withDigit);
+  });
+
+  it('returns same reference when no cell is selected', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    expect(togglePencilMark(loaded, 3 as Digit)).toBe(loaded);
+  });
+});
+
+describe('togglePencilMode', () => {
+  it('flips the pencilMode boolean', () => {
+    expect(togglePencilMode(initialEmptyState).pencilMode).toBe(true);
+    const on = togglePencilMode(initialEmptyState);
+    expect(togglePencilMode(on).pencilMode).toBe(false);
   });
 });

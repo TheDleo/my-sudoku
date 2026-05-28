@@ -72,5 +72,21 @@ export function eraseCell(state: GameState): GameState {
   return state;
 }
 
+export function togglePencilMark(state: GameState, digit: Digit): GameState {
+  const sel = state.selection.cell;
+  if (sel === null) return state;
+  if (state.given[sel.row]![sel.col]) return state;
+  if (state.cells[sel.row]![sel.col]!.value !== null) return state;
+  const nextCells = cloneCells(state.cells);
+  const marks = nextCells[sel.row]![sel.col]!.pencilMarks;
+  if (marks.has(digit)) marks.delete(digit);
+  else marks.add(digit);
+  return { ...state, cells: nextCells };
+}
+
+export function togglePencilMode(state: GameState): GameState {
+  return { ...state, pencilMode: !state.pencilMode };
+}
+
 // Re-export shared types for convenience.
 export type { GameSnapshot, GameState };
