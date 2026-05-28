@@ -92,4 +92,43 @@ describe('createWorkerClient', () => {
     expect(pa).toBe(hardPuzzle);
     expect(pb).toBe(hardPuzzle);
   });
+
+  it('rejects pending callers on an error response and retries on the next getPuzzle', async () => {
+    const fake = new FakeWorker();
+    const client = createWorkerClient(fake);
+    const promise = client.getPuzzle('expert');
+    fake.rejectNext('expert', 'maxAttempts');
+    await expect(promise).rejects.toThrow('maxAttempts');
+
+    // Next getPuzzle should post a fresh generate (boot did 4, this is the 5th).
+    const retry = client.getPuzzle('expert');
+    expect(fake.receivedMessages()).toEqual([
+      { type: 'generate', difficulty: 'easy' },
+      { type: 'generate', difficulty: 'medium' },
+      { type: 'generate', difficulty: 'hard' },
+      { type: 'generate', difficulty: 'expert' },
+      { type: 'generate', difficulty: 'expert' },
+    ]);
+
+    // Make the retry resolve so we don't leak a hanging promise.
+    const puzzle = makeFakePuzzle('expert');
+    fake.resolveNext('expert', puzzle);
+    await expect(retry).resolves.toBe(puzzle);
+  });
+
+  it('drops an error response silently when there are no pending callers', () => {
+    const fake = new FakeWorker();
+    createWorkerClient(fake);
+    expect(() => fake.rejectNext('easy', 'transient')).not.toThrow();
+    // No state to assert beyond "did not throw" — silent drop is the spec.
+  });
+
+  it('terminate rejects pending promises and calls the worker terminate', async () => {
+    const fake = new FakeWorker();
+    const client = createWorkerClient(fake);
+    const pending = client.getPuzzle('medium');
+    client.terminate();
+    await expect(pending).rejects.toThrow('worker client terminated');
+    expect(fake.terminated).toBe(true);
+  });
 });

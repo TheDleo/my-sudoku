@@ -79,7 +79,13 @@ export function createWorkerClient(workerLike?: WorkerLike): WorkerClient {
         cache[tier] = msg.puzzle;
       }
     } else {
-      // 'error' — Task 4 fills this branch in
+      const waiters = pending[tier];
+      if (waiters.length > 0) {
+        const err = new Error(msg.message);
+        for (const w of waiters) w.reject(err);
+        pending[tier] = [];
+      }
+      // else: no waiters — drop silently. Next getPuzzle will retry.
     }
   }
 
@@ -103,7 +109,12 @@ export function createWorkerClient(workerLike?: WorkerLike): WorkerClient {
       });
     },
     terminate(): void {
-      worker.terminate(); // Full implementation in Task 4.
+      worker.terminate();
+      const err = new Error('worker client terminated');
+      for (const tier of TIERS) {
+        for (const w of pending[tier]) w.reject(err);
+        pending[tier] = [];
+      }
     },
   };
 }
