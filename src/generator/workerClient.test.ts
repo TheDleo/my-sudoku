@@ -45,8 +45,6 @@ class FakeWorker implements WorkerLike {
   }
 }
 
-void makeFakePuzzle;
-
 describe('createWorkerClient', () => {
   it('posts one generate message per tier on construction', () => {
     const fake = new FakeWorker();
@@ -54,5 +52,44 @@ describe('createWorkerClient', () => {
     expect(fake.receivedMessages()).toEqual(
       TIERS.map((tier) => ({ type: 'generate', difficulty: tier })),
     );
+  });
+
+  it('getPuzzle returns the cached puzzle immediately and posts a refill', async () => {
+    const fake = new FakeWorker();
+    const client = createWorkerClient(fake);
+    const easyPuzzle = makeFakePuzzle('easy');
+    fake.resolveNext('easy', easyPuzzle);
+
+    await expect(client.getPuzzle('easy')).resolves.toBe(easyPuzzle);
+
+    // Boot posted 4; the cached-hit refill posts a 5th targeting 'easy'.
+    expect(fake.receivedMessages()).toEqual([
+      { type: 'generate', difficulty: 'easy' },
+      { type: 'generate', difficulty: 'medium' },
+      { type: 'generate', difficulty: 'hard' },
+      { type: 'generate', difficulty: 'expert' },
+      { type: 'generate', difficulty: 'easy' },
+    ]);
+  });
+
+  it('getPuzzle on a cold tier returns a pending promise resolved by the next response', async () => {
+    const fake = new FakeWorker();
+    const client = createWorkerClient(fake);
+    const promise = client.getPuzzle('medium');
+    const mediumPuzzle = makeFakePuzzle('medium');
+    fake.resolveNext('medium', mediumPuzzle);
+    await expect(promise).resolves.toBe(mediumPuzzle);
+  });
+
+  it('two concurrent getPuzzle calls for the same tier resolve with the same puzzle', async () => {
+    const fake = new FakeWorker();
+    const client = createWorkerClient(fake);
+    const a = client.getPuzzle('hard');
+    const b = client.getPuzzle('hard');
+    const hardPuzzle = makeFakePuzzle('hard');
+    fake.resolveNext('hard', hardPuzzle);
+    const [pa, pb] = await Promise.all([a, b]);
+    expect(pa).toBe(hardPuzzle);
+    expect(pb).toBe(hardPuzzle);
   });
 });
