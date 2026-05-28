@@ -1,5 +1,5 @@
 import type { Cell, CellCoord, Digit, Puzzle } from '../types';
-import { empty9x9 } from './helpers';
+import { cloneCells, empty9x9 } from './helpers';
 import type { GameSnapshot, GameState } from './types';
 
 const SENTINEL_PUZZLE: Puzzle = {
@@ -43,6 +43,15 @@ export function selectCell(state: GameState, coord: CellCoord | null): GameState
 
 export function setSelectedNumber(state: GameState, n: Digit | null): GameState {
   return { ...state, selection: { ...state.selection, number: n } };
+}
+
+export function placeDigit(state: GameState, digit: Digit): GameState {
+  const sel = state.selection.cell;
+  if (sel === null) return state;
+  if (state.given[sel.row]![sel.col]) return state;
+  const nextCells = cloneCells(state.cells);
+  nextCells[sel.row]![sel.col]!.value = digit;
+  return { ...state, cells: nextCells };
 }
 
 // Re-export shared types for convenience.

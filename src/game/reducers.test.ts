@@ -1,6 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import type { Digit, Puzzle } from '../types';
-import { initialEmptyState, loadPuzzle, selectCell, setSelectedNumber } from './reducers';
+import {
+  initialEmptyState,
+  loadPuzzle,
+  placeDigit,
+  selectCell,
+  setSelectedNumber,
+} from './reducers';
 
 function makePuzzle(): Puzzle {
   const initialBoard: (Digit | null)[][] = Array.from({ length: 9 }, () =>
@@ -115,5 +121,42 @@ describe('setSelectedNumber', () => {
   it('does not modify history', () => {
     const next = setSelectedNumber(initialEmptyState, 5 as Digit);
     expect(next.history).toBe(initialEmptyState.history);
+  });
+});
+
+describe('placeDigit', () => {
+  it('sets the digit when a non-given cell is selected', () => {
+    const puzzle = makePuzzle();
+    const loaded = loadPuzzle(initialEmptyState, puzzle);
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const next = placeDigit(selected, 3 as Digit);
+    expect(next.cells[1]![1]!.value).toBe(3);
+  });
+
+  it('returns the same reference (no-op) when no cell is selected', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    expect(placeDigit(loaded, 3 as Digit)).toBe(loaded);
+  });
+
+  it('returns the same reference (no-op) when the selected cell is given', () => {
+    const puzzle = makePuzzle();
+    const loaded = loadPuzzle(initialEmptyState, puzzle);
+    const selected = selectCell(loaded, { row: 0, col: 0 }); // (0,0) is given
+    expect(placeDigit(selected, 3 as Digit)).toBe(selected);
+  });
+
+  it('overwrites a previously placed digit in a non-given cell', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const first = placeDigit(selected, 3 as Digit);
+    const second = placeDigit(first, 7 as Digit);
+    expect(second.cells[1]![1]!.value).toBe(7);
+  });
+
+  it('does not modify history (history snapshot is withSnapshot job)', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const next = placeDigit(selected, 3 as Digit);
+    expect(next.history).toBe(selected.history);
   });
 });
