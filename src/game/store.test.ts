@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { Digit, Puzzle } from '../types';
 import * as persistence from './persistence';
+import { initialEmptyState } from './reducers';
+import { useGameStore } from './store';
 
 function makePuzzle(): Puzzle {
   const initialBoard: (Digit | null)[][] = Array.from({ length: 9 }, () =>
@@ -16,22 +18,23 @@ function makePuzzle(): Puzzle {
 describe('useGameStore', () => {
   let saveSpy: ReturnType<typeof vi.spyOn>;
 
-  beforeEach(async () => {
+  beforeEach(() => {
+    // Spy first so the reset's subscriber fire goes to the spy, not real localStorage.
     saveSpy = vi.spyOn(persistence, 'save').mockImplementation(() => undefined);
-    // Re-import the store fresh each test to reset internal state.
-    vi.resetModules();
+    // Reset the module-level store's GameState fields so tests don't leak.
+    // Default merge (not replace) preserves the action methods set up by create().
+    useGameStore.setState({ ...initialEmptyState });
+    saveSpy.mockClear();
   });
 
-  it('selectCell does NOT trigger save', async () => {
-    const { useGameStore } = await import('./store');
+  it('selectCell does NOT trigger save', () => {
     useGameStore.getState().loadPuzzle(makePuzzle());
     saveSpy.mockClear();
     useGameStore.getState().selectCell({ row: 4, col: 4 });
     expect(saveSpy).not.toHaveBeenCalled();
   });
 
-  it('placeDigit DOES trigger save when it modifies cells', async () => {
-    const { useGameStore } = await import('./store');
+  it('placeDigit DOES trigger save when it modifies cells', () => {
     useGameStore.getState().loadPuzzle(makePuzzle());
     useGameStore.getState().selectCell({ row: 1, col: 1 });
     saveSpy.mockClear();
@@ -39,8 +42,7 @@ describe('useGameStore', () => {
     expect(saveSpy).toHaveBeenCalledOnce();
   });
 
-  it('placeDigit on a given cell does NOT trigger save', async () => {
-    const { useGameStore } = await import('./store');
+  it('placeDigit on a given cell does NOT trigger save', () => {
     useGameStore.getState().loadPuzzle(makePuzzle());
     useGameStore.getState().selectCell({ row: 0, col: 0 }); // given
     saveSpy.mockClear();
@@ -48,23 +50,20 @@ describe('useGameStore', () => {
     expect(saveSpy).not.toHaveBeenCalled();
   });
 
-  it('placeDigit pushes a snapshot onto history.past', async () => {
-    const { useGameStore } = await import('./store');
+  it('placeDigit pushes a snapshot onto history.past', () => {
     useGameStore.getState().loadPuzzle(makePuzzle());
     useGameStore.getState().selectCell({ row: 1, col: 1 });
     useGameStore.getState().placeDigit(3 as Digit);
     expect(useGameStore.getState().history.past.length).toBe(1);
   });
 
-  it('loadPuzzle triggers save', async () => {
-    const { useGameStore } = await import('./store');
+  it('loadPuzzle triggers save', () => {
     saveSpy.mockClear();
     useGameStore.getState().loadPuzzle(makePuzzle());
     expect(saveSpy).toHaveBeenCalledOnce();
   });
 
-  it('undo through the store reverts placeDigit', async () => {
-    const { useGameStore } = await import('./store');
+  it('undo through the store reverts placeDigit', () => {
     useGameStore.getState().loadPuzzle(makePuzzle());
     useGameStore.getState().selectCell({ row: 1, col: 1 });
     useGameStore.getState().placeDigit(3 as Digit);
