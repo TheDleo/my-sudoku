@@ -71,6 +71,14 @@ describe('deserialize error handling', () => {
     expect(deserialize('{}')).toBeNull();
     expect(deserialize('{"puzzle": {}}')).toBeNull();
   });
+
+  it('returns null on jagged cells/given rows (column count mismatch)', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const json = serialize(loaded);
+    const parsed = JSON.parse(json) as { cells: unknown[][]; given: unknown[][] };
+    parsed.cells[0] = parsed.cells[0]!.slice(0, 8); // 8 cells instead of 9
+    expect(deserialize(JSON.stringify(parsed))).toBeNull();
+  });
 });
 
 describe('load / save', () => {

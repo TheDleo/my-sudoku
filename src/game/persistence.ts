@@ -38,7 +38,9 @@ function isSerializedState(x: unknown): x is SerializedState {
   if (typeof o.mistakes !== 'number') return false;
   if (typeof o.elapsedMs !== 'number') return false;
   if (!Array.isArray(o.cells) || o.cells.length !== 9) return false;
+  if (!o.cells.every((row) => Array.isArray(row) && row.length === 9)) return false;
   if (!Array.isArray(o.given) || o.given.length !== 9) return false;
+  if (!o.given.every((row) => Array.isArray(row) && row.length === 9)) return false;
   if (typeof o.puzzle !== 'object' || o.puzzle === null) return false;
   return true;
 }
