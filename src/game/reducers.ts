@@ -1,4 +1,4 @@
-import type { Cell, Digit, Puzzle } from '../types';
+import type { Cell, CellCoord, Digit, Puzzle } from '../types';
 import { empty9x9 } from './helpers';
 import type { GameSnapshot, GameState } from './types';
 
@@ -35,6 +35,14 @@ export function loadPuzzle(_state: GameState, puzzle: Puzzle): GameState {
     elapsedMs: 0,
     history: { past: [], future: [] },
   };
+}
+
+export function selectCell(state: GameState, coord: CellCoord | null): GameState {
+  return { ...state, selection: { ...state.selection, cell: coord } };
+}
+
+export function setSelectedNumber(state: GameState, n: Digit | null): GameState {
+  return { ...state, selection: { ...state.selection, number: n } };
 }
 
 // Re-export shared types for convenience.

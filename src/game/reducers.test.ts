@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { Digit, Puzzle } from '../types';
-import { initialEmptyState, loadPuzzle } from './reducers';
+import { initialEmptyState, loadPuzzle, selectCell, setSelectedNumber } from './reducers';
 
 function makePuzzle(): Puzzle {
   const initialBoard: (Digit | null)[][] = Array.from({ length: 9 }, () =>
@@ -68,5 +68,52 @@ describe('loadPuzzle', () => {
         expect(c.pencilMarks.size).toBe(0);
       }
     }
+  });
+});
+
+describe('selectCell', () => {
+  it('sets selection.cell and preserves selection.number', () => {
+    const start = { ...initialEmptyState, selection: { cell: null, number: 5 as Digit } };
+    const next = selectCell(start, { row: 2, col: 3 });
+    expect(next.selection).toEqual({ cell: { row: 2, col: 3 }, number: 5 });
+  });
+
+  it('clears selection.cell when given null', () => {
+    const start = {
+      ...initialEmptyState,
+      selection: { cell: { row: 0, col: 0 }, number: 7 as Digit },
+    };
+    const next = selectCell(start, null);
+    expect(next.selection).toEqual({ cell: null, number: 7 });
+  });
+
+  it('does not modify history', () => {
+    const next = selectCell(initialEmptyState, { row: 0, col: 0 });
+    expect(next.history).toBe(initialEmptyState.history);
+  });
+});
+
+describe('setSelectedNumber', () => {
+  it('sets selection.number and preserves selection.cell', () => {
+    const start = {
+      ...initialEmptyState,
+      selection: { cell: { row: 4, col: 4 }, number: null },
+    };
+    const next = setSelectedNumber(start, 9 as Digit);
+    expect(next.selection).toEqual({ cell: { row: 4, col: 4 }, number: 9 });
+  });
+
+  it('clears selection.number when given null', () => {
+    const start = {
+      ...initialEmptyState,
+      selection: { cell: null, number: 3 as Digit },
+    };
+    const next = setSelectedNumber(start, null);
+    expect(next.selection).toEqual({ cell: null, number: null });
+  });
+
+  it('does not modify history', () => {
+    const next = setSelectedNumber(initialEmptyState, 5 as Digit);
+    expect(next.history).toBe(initialEmptyState.history);
   });
 });
