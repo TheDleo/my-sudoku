@@ -54,5 +54,23 @@ export function placeDigit(state: GameState, digit: Digit): GameState {
   return { ...state, cells: nextCells };
 }
 
+export function eraseCell(state: GameState): GameState {
+  const sel = state.selection.cell;
+  if (sel === null) return state;
+  if (state.given[sel.row]![sel.col]) return state;
+  const cell = state.cells[sel.row]![sel.col]!;
+  if (cell.value !== null) {
+    const nextCells = cloneCells(state.cells);
+    nextCells[sel.row]![sel.col]!.value = null;
+    return { ...state, cells: nextCells };
+  }
+  if (cell.pencilMarks.size > 0) {
+    const nextCells = cloneCells(state.cells);
+    nextCells[sel.row]![sel.col]!.pencilMarks = new Set<Digit>();
+    return { ...state, cells: nextCells };
+  }
+  return state;
+}
+
 // Re-export shared types for convenience.
 export type { GameSnapshot, GameState };

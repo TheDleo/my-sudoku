@@ -1,12 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import type { Digit, Puzzle } from '../types';
 import {
+  eraseCell,
   initialEmptyState,
   loadPuzzle,
   placeDigit,
   selectCell,
   setSelectedNumber,
 } from './reducers';
+import { cloneCells as cloneCellsForTest } from './helpers';
 
 function makePuzzle(): Puzzle {
   const initialBoard: (Digit | null)[][] = Array.from({ length: 9 }, () =>
@@ -158,5 +160,43 @@ describe('placeDigit', () => {
     const selected = selectCell(loaded, { row: 1, col: 1 });
     const next = placeDigit(selected, 3 as Digit);
     expect(next.history).toBe(selected.history);
+  });
+});
+
+describe('eraseCell', () => {
+  it('clears the value of the selected non-given cell', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const withDigit = placeDigit(selected, 3 as Digit);
+    const next = eraseCell(withDigit);
+    expect(next.cells[1]![1]!.value).toBe(null);
+  });
+
+  it('clears pencil marks when the cell has no value but has marks', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const cells = cloneCellsForTest(loaded.cells);
+    cells[1]![1]!.pencilMarks = new Set<Digit>([1, 2, 3] as Digit[]);
+    const seeded = { ...loaded, cells };
+    const selected = selectCell(seeded, { row: 1, col: 1 });
+    const next = eraseCell(selected);
+    expect(next.cells[1]![1]!.value).toBe(null);
+    expect(next.cells[1]![1]!.pencilMarks.size).toBe(0);
+  });
+
+  it('returns the same reference when the cell is empty (no value, no marks)', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    expect(eraseCell(selected)).toBe(selected);
+  });
+
+  it('returns the same reference when the cell is given', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 0, col: 0 }); // given cell
+    expect(eraseCell(selected)).toBe(selected);
+  });
+
+  it('returns the same reference when no cell is selected', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    expect(eraseCell(loaded)).toBe(loaded);
   });
 });
