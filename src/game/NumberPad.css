@@ -1,0 +1,38 @@
+.number-pad {
+  display: flex;
+  width: min(100%, 500px);
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.number-pad__digit,
+.number-pad__erase {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: clamp(0.875rem, 3vw, 1.25rem);
+  line-height: 1;
+  gap: 2px;
+}
+
+.number-pad__digit:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.number-pad__count {
+  font-size: 0.6em;
+  color: var(--fg-muted);
+}
+
+.number-pad__erase {
+  font-size: clamp(1rem, 3.5vw, 1.5rem);
+}
