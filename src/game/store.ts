@@ -15,6 +15,7 @@ export const useGameStore = create<GameStore>()((set) => ({
   eraseCell: () => set((s) => withSnapshot(s, reducers.eraseCell)),
   togglePencilMark: (d) => set((s) => withSnapshot(s, (st) => reducers.togglePencilMark(st, d))),
   togglePencilMode: () => set((s) => withSnapshot(s, reducers.togglePencilMode)),
+  fillCandidates: () => set((s) => withSnapshot(s, reducers.fillCandidates)),
 
   undo: () => set(reducers.undo),
   redo: () => set(reducers.redo),

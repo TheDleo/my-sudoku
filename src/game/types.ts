@@ -24,6 +24,7 @@ export type GameStore = GameState & {
   eraseCell: () => void;
   togglePencilMark: (d: Digit) => void;
   togglePencilMode: () => void;
+  fillCandidates: () => void;
   undo: () => void;
   redo: () => void;
 };
