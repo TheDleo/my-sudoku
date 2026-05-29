@@ -34,8 +34,10 @@ export function handleKey(event: KeyboardEvent, state: KeyState, actions: KeyAct
   }
 
   if (key === 'Backspace' || key === 'Delete') {
-    event.preventDefault();
-    if (selection.cell !== null) actions.eraseCell();
+    if (selection.cell !== null) {
+      event.preventDefault();
+      actions.eraseCell();
+    }
     return;
   }
 

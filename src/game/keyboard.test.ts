@@ -150,6 +150,7 @@ describe('handleKey', () => {
       const actions = makeActions();
       handleKey(e, state, actions);
       expect(actions.eraseCell).not.toHaveBeenCalled();
+      expect(e.preventDefault).not.toHaveBeenCalled();
     });
   });
 
