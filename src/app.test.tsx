@@ -1,10 +1,27 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { initialEmptyState } from './game/reducers';
+import { useGameStore } from './game/store';
 import { App } from './app';
 
 describe('App', () => {
+  beforeEach(() => {
+    useGameStore.setState({ ...initialEmptyState });
+  });
+
   it('renders the Sudoku heading', () => {
     render(<App />);
     expect(screen.getByRole('heading', { name: /sudoku/i, level: 1 })).toBeInTheDocument();
+  });
+
+  it('clicking outside the board deselects the selected cell', () => {
+    useGameStore.setState({
+      ...initialEmptyState,
+      selection: { cell: { row: 0, col: 0 }, number: null },
+    });
+    render(<App />);
+    // Click the <h1> — it is outside the Board, so Board's stopPropagation does not fire
+    fireEvent.click(screen.getByRole('heading'));
+    expect(useGameStore.getState().selection.cell).toBeNull();
   });
 });
