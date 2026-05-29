@@ -53,7 +53,7 @@ export function getHighlights(
     }
   }
 
-  // Selected (highest priority so far)
+  // Selected (highest priority)
   if (state.selection.cell !== null) {
     const { row, col } = state.selection.cell;
     map[row]![col] = 'selected';
