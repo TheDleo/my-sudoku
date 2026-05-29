@@ -3,8 +3,8 @@ import { useGameStore } from './store';
 
 export function ActionBar() {
   const pencilMode = useGameStore((s) => s.pencilMode);
-  const past = useGameStore((s) => s.history.past);
-  const future = useGameStore((s) => s.history.future);
+  const canUndo = useGameStore((s) => s.history.past.length > 0);
+  const canRedo = useGameStore((s) => s.history.future.length > 0);
 
   const handlePencilToggle = () => {
     useGameStore.getState().togglePencilMode();
@@ -34,10 +34,10 @@ export function ActionBar() {
       <button className="action-bar__candidates" onClick={handleFillCandidates}>
         Candidates
       </button>
-      <button className="action-bar__undo" onClick={handleUndo} disabled={past.length === 0}>
+      <button className="action-bar__undo" onClick={handleUndo} disabled={!canUndo}>
         Undo
       </button>
-      <button className="action-bar__redo" onClick={handleRedo} disabled={future.length === 0}>
+      <button className="action-bar__redo" onClick={handleRedo} disabled={!canRedo}>
         Redo
       </button>
     </div>
