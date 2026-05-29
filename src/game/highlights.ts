@@ -1,3 +1,4 @@
+import { computeCandidates } from '../solver/candidates';
 import { boxesOf, colsOf, peersOf, rowsOf } from '../solver/units';
 import type { CellCoord, Digit } from '../types';
 import type { GameState } from './types';
@@ -11,6 +12,19 @@ export function getHighlights(
   const map: HighlightMap = Array.from({ length: 9 }, () =>
     Array.from({ length: 9 }, (): CellHighlight => null),
   );
+
+  // Possible (lowest priority — applied first, overwritten by higher tiers)
+  if (state.selection.number !== null) {
+    const values = state.cells.map((row) => row.map((c) => c.value));
+    const candidates = computeCandidates(values);
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (state.cells[r]![c]!.value === null && candidates[r]![c]!.has(state.selection.number)) {
+          map[r]![c] = 'possible';
+        }
+      }
+    }
+  }
 
   // Peer (lower priority — overwritten by conflict and selected below)
   if (state.selection.cell !== null) {
