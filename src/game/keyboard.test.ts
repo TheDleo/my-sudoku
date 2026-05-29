@@ -215,6 +215,28 @@ describe('handleKey', () => {
       expect(actions.selectCell).not.toHaveBeenCalled();
       expect(e.preventDefault).not.toHaveBeenCalled();
     });
+
+    it('z without modifier is a no-op', () => {
+      const e = makeEvent('z');
+      const state = makeState({ selection: { cell: { row: 2, col: 2 }, number: null } });
+      const actions = makeActions();
+      handleKey(e, state, actions);
+      expect(actions.undo).not.toHaveBeenCalled();
+      expect(actions.redo).not.toHaveBeenCalled();
+      expect(actions.placeDigit).not.toHaveBeenCalled();
+      expect(e.preventDefault).not.toHaveBeenCalled();
+    });
+
+    it('y without modifier is a no-op', () => {
+      const e = makeEvent('y');
+      const state = makeState({ selection: { cell: { row: 2, col: 2 }, number: null } });
+      const actions = makeActions();
+      handleKey(e, state, actions);
+      expect(actions.undo).not.toHaveBeenCalled();
+      expect(actions.redo).not.toHaveBeenCalled();
+      expect(actions.placeDigit).not.toHaveBeenCalled();
+      expect(e.preventDefault).not.toHaveBeenCalled();
+    });
   });
 
   describe('undo / redo shortcuts', () => {

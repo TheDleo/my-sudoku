@@ -27,7 +27,7 @@ export function handleKey(event: KeyboardEvent, state: KeyState, actions: KeyAct
     return;
   }
 
-  if (ctrlKey && key === 'y') {
+  if (ctrlKey && key.toLowerCase() === 'y') {
     event.preventDefault();
     actions.redo();
     return;
