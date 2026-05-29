@@ -377,3 +377,44 @@ describe('redo', () => {
     expect(reverted.cells[1]![1]!.pencilMarks.has(5 as Digit)).toBe(true);
   });
 });
+
+describe('placeDigit — auto-removal of peer pencil marks', () => {
+  it('removes the placed digit from pencil marks of peer cells', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const cells = cloneCellsForTest(loaded.cells);
+    // (0,1) shares column 1 with (1,1) — is a peer
+    cells[0]![1]!.pencilMarks.add(3 as Digit);
+    // (1,0) shares row 1 with (1,1) — is a peer
+    cells[1]![0]!.pencilMarks.add(3 as Digit);
+    // (2,2) is in the same top-left box as (1,1) — is a peer
+    cells[2]![2]!.pencilMarks.add(3 as Digit);
+    const state = { ...loaded, cells, selection: { cell: { row: 1, col: 1 }, number: null } };
+    const next = placeDigit(state, 3 as Digit);
+    expect(next.cells[0]![1]!.pencilMarks.has(3 as Digit)).toBe(false);
+    expect(next.cells[1]![0]!.pencilMarks.has(3 as Digit)).toBe(false);
+    expect(next.cells[2]![2]!.pencilMarks.has(3 as Digit)).toBe(false);
+  });
+
+  it('leaves other pencil marks on peer cells untouched', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const cells = cloneCellsForTest(loaded.cells);
+    cells[0]![1]!.pencilMarks.add(3 as Digit);
+    cells[0]![1]!.pencilMarks.add(5 as Digit);
+    const state = { ...loaded, cells, selection: { cell: { row: 1, col: 1 }, number: null } };
+    const next = placeDigit(state, 3 as Digit);
+    expect(next.cells[0]![1]!.pencilMarks.has(3 as Digit)).toBe(false);
+    expect(next.cells[0]![1]!.pencilMarks.has(5 as Digit)).toBe(true);
+  });
+
+  it('undo restores cleared peer pencil marks', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const cells = cloneCellsForTest(loaded.cells);
+    cells[0]![1]!.pencilMarks.add(3 as Digit);
+    const state = { ...loaded, cells, selection: { cell: { row: 1, col: 1 }, number: null } };
+    const placed = withSnapshot(state, (s) => placeDigit(s, 3 as Digit));
+    expect(placed.cells[0]![1]!.pencilMarks.has(3 as Digit)).toBe(false);
+    const reverted = undo(placed);
+    expect(reverted.cells[0]![1]!.pencilMarks.has(3 as Digit)).toBe(true);
+    expect(reverted.cells[1]![1]!.value).toBeNull();
+  });
+});

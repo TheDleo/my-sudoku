@@ -56,6 +56,9 @@ export function placeDigit(state: GameState, digit: Digit): GameState {
   if (state.given[sel.row]![sel.col]) return state;
   const nextCells = cloneCells(state.cells);
   nextCells[sel.row]![sel.col]!.value = digit;
+  for (const peer of peersOf(sel)) {
+    nextCells[peer.row]![peer.col]!.pencilMarks.delete(digit);
+  }
   const conflicted = isConflictingPlacement(state.cells, sel, digit);
   return {
     ...state,
