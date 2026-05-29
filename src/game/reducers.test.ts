@@ -155,6 +155,50 @@ describe('placeDigit', () => {
     const next = placeDigit(selected, 3 as Digit);
     expect(next.history).toBe(selected.history);
   });
+
+  it('increments mistakes when placed digit conflicts in the same row', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    // Place 3 at (1,1) — no peer has 3 yet
+    const s1 = placeDigit(selectCell(loaded, { row: 1, col: 1 }), 3 as Digit);
+    expect(s1.mistakes).toBe(0);
+    // Place 3 at (1,3) — same row as (1,1), conflict
+    const s2 = placeDigit(selectCell(s1, { row: 1, col: 3 }), 3 as Digit);
+    expect(s2.mistakes).toBe(1);
+  });
+
+  it('increments mistakes when placed digit conflicts in the same column', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const s1 = placeDigit(selectCell(loaded, { row: 1, col: 1 }), 3 as Digit);
+    // Place 3 at (3,1) — same col as (1,1), conflict
+    const s2 = placeDigit(selectCell(s1, { row: 3, col: 1 }), 3 as Digit);
+    expect(s2.mistakes).toBe(1);
+  });
+
+  it('increments mistakes when placed digit conflicts in the same box', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const s1 = placeDigit(selectCell(loaded, { row: 1, col: 1 }), 3 as Digit);
+    // (2,2) is in the same top-left 3×3 box as (1,1), conflict
+    const s2 = placeDigit(selectCell(s1, { row: 2, col: 2 }), 3 as Digit);
+    expect(s2.mistakes).toBe(1);
+  });
+
+  it('does not increment mistakes on a clean (non-conflicting) placement', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const s1 = placeDigit(selectCell(loaded, { row: 1, col: 1 }), 3 as Digit);
+    expect(s1.mistakes).toBe(0);
+  });
+
+  it('undo does not restore mistakes', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const s1 = selectCell(loaded, { row: 1, col: 1 });
+    const s2 = withSnapshot(s1, (s) => placeDigit(s, 3 as Digit)); // clean placement
+    const s3 = selectCell(s2, { row: 1, col: 3 });
+    const s4 = withSnapshot(s3, (s) => placeDigit(s, 3 as Digit)); // conflict → mistakes=1
+    expect(s4.mistakes).toBe(1);
+    const s5 = undo(s4);
+    expect(s5.mistakes).toBe(1); // mistakes NOT restored by undo
+    expect(s5.cells[1]![3]!.value).toBeNull(); // cell IS restored
+  });
 });
 
 describe('eraseCell', () => {

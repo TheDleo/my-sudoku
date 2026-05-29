@@ -1,5 +1,6 @@
 import type { Cell, CellCoord, Digit, Puzzle } from '../types';
 import { cloneCells, empty9x9 } from './helpers';
+import { peersOf } from '../solver/units';
 import type { GameSnapshot, GameState } from './types';
 
 const SENTINEL_PUZZLE: Puzzle = {
@@ -45,13 +46,22 @@ export function setSelectedNumber(state: GameState, n: Digit | null): GameState 
   return { ...state, selection: { ...state.selection, number: n } };
 }
 
+function isConflictingPlacement(cells: Cell[][], sel: CellCoord, digit: Digit): boolean {
+  return peersOf(sel).some((peer) => cells[peer.row]![peer.col]!.value === digit);
+}
+
 export function placeDigit(state: GameState, digit: Digit): GameState {
   const sel = state.selection.cell;
   if (sel === null) return state;
   if (state.given[sel.row]![sel.col]) return state;
   const nextCells = cloneCells(state.cells);
   nextCells[sel.row]![sel.col]!.value = digit;
-  return { ...state, cells: nextCells };
+  const conflicted = isConflictingPlacement(state.cells, sel, digit);
+  return {
+    ...state,
+    cells: nextCells,
+    mistakes: conflicted ? state.mistakes + 1 : state.mistakes,
+  };
 }
 
 export function eraseCell(state: GameState): GameState {
