@@ -4,12 +4,34 @@ import type { GameState, GameStore } from './types';
 type KeyState = Pick<GameState, 'cells' | 'given' | 'selection' | 'pencilMode'>;
 type KeyActions = Pick<
   GameStore,
-  'selectCell' | 'setSelectedNumber' | 'placeDigit' | 'eraseCell' | 'togglePencilMark'
+  | 'selectCell'
+  | 'setSelectedNumber'
+  | 'placeDigit'
+  | 'eraseCell'
+  | 'togglePencilMark'
+  | 'undo'
+  | 'redo'
 >;
 
 export function handleKey(event: KeyboardEvent, state: KeyState, actions: KeyActions): void {
-  const { key, shiftKey } = event;
+  const { key, shiftKey, ctrlKey, metaKey } = event;
   const { selection, pencilMode } = state;
+
+  if ((ctrlKey || metaKey) && key === 'z') {
+    event.preventDefault();
+    if (shiftKey) {
+      actions.redo();
+    } else {
+      actions.undo();
+    }
+    return;
+  }
+
+  if (ctrlKey && key === 'y') {
+    event.preventDefault();
+    actions.redo();
+    return;
+  }
 
   if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight') {
     event.preventDefault();

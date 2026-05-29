@@ -3,8 +3,8 @@ import type { Digit } from '../types';
 import { initialEmptyState } from './reducers';
 import { handleKey } from './keyboard';
 
-function makeEvent(key: string, shiftKey = false) {
-  return { key, shiftKey, preventDefault: vi.fn() } as unknown as KeyboardEvent;
+function makeEvent(key: string, shiftKey = false, ctrlKey = false, metaKey = false) {
+  return { key, shiftKey, ctrlKey, metaKey, preventDefault: vi.fn() } as unknown as KeyboardEvent;
 }
 
 function makeState(overrides: Partial<typeof initialEmptyState> = {}) {
@@ -18,6 +18,8 @@ function makeActions() {
     placeDigit: vi.fn(),
     eraseCell: vi.fn(),
     togglePencilMark: vi.fn(),
+    undo: vi.fn(),
+    redo: vi.fn(),
   };
 }
 
@@ -212,6 +214,50 @@ describe('handleKey', () => {
       expect(actions.eraseCell).not.toHaveBeenCalled();
       expect(actions.selectCell).not.toHaveBeenCalled();
       expect(e.preventDefault).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('undo / redo shortcuts', () => {
+    it('Ctrl+Z calls undo and prevents default', () => {
+      const e = makeEvent('z', false, true, false);
+      const actions = makeActions();
+      handleKey(e, makeState(), actions);
+      expect(actions.undo).toHaveBeenCalled();
+      expect(actions.redo).not.toHaveBeenCalled();
+      expect(e.preventDefault).toHaveBeenCalled();
+    });
+
+    it('Cmd+Z calls undo', () => {
+      const e = makeEvent('z', false, false, true);
+      const actions = makeActions();
+      handleKey(e, makeState(), actions);
+      expect(actions.undo).toHaveBeenCalled();
+    });
+
+    it('Ctrl+Shift+Z calls redo, not undo', () => {
+      const e = makeEvent('z', true, true, false);
+      const actions = makeActions();
+      handleKey(e, makeState(), actions);
+      expect(actions.redo).toHaveBeenCalled();
+      expect(actions.undo).not.toHaveBeenCalled();
+      expect(e.preventDefault).toHaveBeenCalled();
+    });
+
+    it('Cmd+Shift+Z calls redo', () => {
+      const e = makeEvent('z', true, false, true);
+      const actions = makeActions();
+      handleKey(e, makeState(), actions);
+      expect(actions.redo).toHaveBeenCalled();
+      expect(actions.undo).not.toHaveBeenCalled();
+    });
+
+    it('Ctrl+Y calls redo', () => {
+      const e = makeEvent('y', false, true, false);
+      const actions = makeActions();
+      handleKey(e, makeState(), actions);
+      expect(actions.redo).toHaveBeenCalled();
+      expect(actions.undo).not.toHaveBeenCalled();
+      expect(e.preventDefault).toHaveBeenCalled();
     });
   });
 });
