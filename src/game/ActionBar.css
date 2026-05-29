@@ -21,3 +21,14 @@
   color: var(--accent-fg);
   border-color: var(--accent);
 }
+
+.action-bar__candidates {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 0.875rem;
+  min-height: 44px;
+}
