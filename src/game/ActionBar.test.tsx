@@ -56,4 +56,62 @@ describe('ActionBar', () => {
     // (1,1) is empty in makePuzzle; after fill it must have candidates
     expect(useGameStore.getState().cells[1]![1]!.pencilMarks.size).toBeGreaterThan(0);
   });
+
+  it('renders an undo button', () => {
+    const { getByRole } = render(<ActionBar />);
+    expect(getByRole('button', { name: /^undo$/i })).toBeTruthy();
+  });
+
+  it('renders a redo button', () => {
+    const { getByRole } = render(<ActionBar />);
+    expect(getByRole('button', { name: /^redo$/i })).toBeTruthy();
+  });
+
+  it('undo button is disabled when history.past is empty', () => {
+    const { getByRole } = render(<ActionBar />);
+    expect((getByRole('button', { name: /^undo$/i }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('undo button is enabled when history.past has entries', () => {
+    useGameStore.setState({
+      ...initialEmptyState,
+      history: { past: [{ cells: initialEmptyState.cells, pencilMode: false }], future: [] },
+    });
+    const { getByRole } = render(<ActionBar />);
+    expect((getByRole('button', { name: /^undo$/i }) as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it('redo button is disabled when history.future is empty', () => {
+    const { getByRole } = render(<ActionBar />);
+    expect((getByRole('button', { name: /^redo$/i }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('redo button is enabled when history.future has entries', () => {
+    useGameStore.setState({
+      ...initialEmptyState,
+      history: { past: [], future: [{ cells: initialEmptyState.cells, pencilMode: false }] },
+    });
+    const { getByRole } = render(<ActionBar />);
+    expect((getByRole('button', { name: /^redo$/i }) as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it('clicking undo removes the last entry from history.past', () => {
+    useGameStore.setState({
+      ...initialEmptyState,
+      history: { past: [{ cells: initialEmptyState.cells, pencilMode: false }], future: [] },
+    });
+    const { getByRole } = render(<ActionBar />);
+    fireEvent.click(getByRole('button', { name: /^undo$/i }));
+    expect(useGameStore.getState().history.past.length).toBe(0);
+  });
+
+  it('clicking redo removes the last entry from history.future', () => {
+    useGameStore.setState({
+      ...initialEmptyState,
+      history: { past: [], future: [{ cells: initialEmptyState.cells, pencilMode: false }] },
+    });
+    const { getByRole } = render(<ActionBar />);
+    fireEvent.click(getByRole('button', { name: /^redo$/i }));
+    expect(useGameStore.getState().history.future.length).toBe(0);
+  });
 });

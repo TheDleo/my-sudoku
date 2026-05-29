@@ -32,3 +32,21 @@
   font-size: 0.875rem;
   min-height: 44px;
 }
+
+.action-bar__undo,
+.action-bar__redo {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 0.875rem;
+  min-height: 44px;
+}
+
+.action-bar__undo:disabled,
+.action-bar__redo:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
