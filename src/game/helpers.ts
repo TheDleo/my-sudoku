@@ -1,4 +1,4 @@
-import type { Cell } from '../types';
+import type { Cell, Digit } from '../types';
 
 const SIZE = 9;
 
@@ -22,4 +22,21 @@ export function cloneCells(cells: Cell[][]): Cell[][] {
   return cells.map((row) =>
     row.map((c) => ({ value: c.value, pencilMarks: new Set(c.pencilMarks) })),
   );
+}
+
+const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
+
+export function getRemainingCounts(cells: Cell[][]): Record<Digit, number> {
+  const placed = new Map<Digit, number>();
+  for (const row of cells) {
+    for (const cell of row) {
+      if (cell.value !== null) {
+        placed.set(cell.value, (placed.get(cell.value) ?? 0) + 1);
+      }
+    }
+  }
+  return Object.fromEntries(DIGITS.map((d) => [d, 9 - (placed.get(d) ?? 0)])) as Record<
+    Digit,
+    number
+  >;
 }

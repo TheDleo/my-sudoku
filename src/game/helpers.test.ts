@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { Cell, Digit } from '../types';
-import { cloneCells, empty9x9 } from './helpers';
+import { cloneCells, empty9x9, getRemainingCounts } from './helpers';
 
 describe('empty9x9', () => {
   it('returns a 9x9 grid of the value when given a non-function', () => {
@@ -35,5 +35,34 @@ describe('cloneCells', () => {
     // Mutating the copy must not affect the original.
     copy[1]![0]!.pencilMarks.add(9 as Digit);
     expect(original[1]![0]!.pencilMarks.has(9 as Digit)).toBe(false);
+  });
+});
+
+describe('getRemainingCounts', () => {
+  it('returns 9 for every digit when all cells are empty', () => {
+    const cells = empty9x9<Cell>(() => ({ value: null, pencilMarks: new Set<Digit>() }));
+    const counts = getRemainingCounts(cells);
+    for (let d = 1; d <= 9; d++) {
+      expect(counts[d as Digit]).toBe(9);
+    }
+  });
+
+  it('returns 8 for the placed digit and 9 for all others', () => {
+    const cells = empty9x9<Cell>(() => ({ value: null, pencilMarks: new Set<Digit>() }));
+    cells[0]![0]!.value = 5 as Digit;
+    const counts = getRemainingCounts(cells);
+    expect(counts[5 as Digit]).toBe(8);
+    expect(counts[1 as Digit]).toBe(9);
+    expect(counts[9 as Digit]).toBe(9);
+  });
+
+  it('returns 0 for a digit placed in all 9 cells of a row', () => {
+    const cells = empty9x9<Cell>(() => ({ value: null, pencilMarks: new Set<Digit>() }));
+    for (let c = 0; c < 9; c++) {
+      cells[0]![c]!.value = 3 as Digit;
+    }
+    const counts = getRemainingCounts(cells);
+    expect(counts[3 as Digit]).toBe(0);
+    expect(counts[1 as Digit]).toBe(9);
   });
 });
