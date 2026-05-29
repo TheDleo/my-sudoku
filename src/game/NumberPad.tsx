@@ -40,7 +40,7 @@ export function NumberPad() {
           <span className="number-pad__count">{remaining[d]}</span>
         </button>
       ))}
-      <button className="number-pad__erase" onClick={handleErase}>
+      <button className="number-pad__erase" aria-label="Erase" onClick={handleErase}>
         ⌫
       </button>
     </div>

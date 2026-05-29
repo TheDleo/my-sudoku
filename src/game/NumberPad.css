@@ -21,6 +21,7 @@
   font-size: clamp(0.875rem, 3vw, 1.25rem);
   line-height: 1;
   gap: 2px;
+  min-height: 44px;
 }
 
 .number-pad__digit:disabled {
