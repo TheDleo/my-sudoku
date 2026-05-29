@@ -1,19 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { Digit, Puzzle } from '../types';
+import type { Digit } from '../types';
 import * as persistence from './persistence';
 import { initialEmptyState } from './reducers';
 import { useGameStore } from './store';
-
-function makePuzzle(): Puzzle {
-  const initialBoard: (Digit | null)[][] = Array.from({ length: 9 }, () =>
-    Array.from({ length: 9 }, () => null),
-  );
-  initialBoard[0]![0] = 5;
-  const solution = Array.from({ length: 9 }, (_, r) =>
-    Array.from({ length: 9 }, (_, c) => (((r + c) % 9) + 1) as Digit),
-  );
-  return { id: 'p', difficulty: 'easy', initialBoard, solution };
-}
+import { makePuzzle } from './testHelpers';
 
 describe('useGameStore', () => {
   let saveSpy: ReturnType<typeof vi.spyOn>;

@@ -1,18 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { Digit, Puzzle } from '../types';
+import type { Digit } from '../types';
 import { initialEmptyState, loadPuzzle, togglePencilMark, selectCell } from './reducers';
 import { deserialize, load, save, serialize, STORAGE_KEY } from './persistence';
-
-function makePuzzle(): Puzzle {
-  const initialBoard: (Digit | null)[][] = Array.from({ length: 9 }, () =>
-    Array.from({ length: 9 }, () => null),
-  );
-  initialBoard[0]![0] = 5;
-  const solution = Array.from({ length: 9 }, (_, r) =>
-    Array.from({ length: 9 }, (_, c) => (((r + c) % 9) + 1) as Digit),
-  );
-  return { id: 'p', difficulty: 'medium', initialBoard, solution };
-}
+import { makePuzzle } from './testHelpers';
 
 describe('serialize / deserialize round-trip', () => {
   it('preserves cells (including pencilMarks as Sets), given, puzzle, pencilMode, mistakes, elapsedMs', () => {
@@ -107,7 +97,7 @@ describe('load / save', () => {
     save(loaded);
     expect(storage[STORAGE_KEY]).toBeDefined();
     const parsed = deserialize(storage[STORAGE_KEY]!);
-    expect(parsed!.puzzle.id).toBe('p');
+    expect(parsed!.puzzle.id).toBe('test');
   });
 
   it('load returns the deserialized state when present', () => {
@@ -115,7 +105,7 @@ describe('load / save', () => {
     save(loaded);
     const restored = load();
     expect(restored).not.toBeNull();
-    expect(restored!.puzzle.id).toBe('p');
+    expect(restored!.puzzle.id).toBe('test');
   });
 
   it('load returns null when STORAGE_KEY is absent', () => {
