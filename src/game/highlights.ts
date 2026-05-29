@@ -1,4 +1,5 @@
-import { peersOf } from '../solver/units';
+import { boxesOf, colsOf, peersOf, rowsOf } from '../solver/units';
+import type { CellCoord, Digit } from '../types';
 import type { GameState } from './types';
 
 export type CellHighlight = 'selected' | 'conflict' | 'peer' | 'possible' | null;
@@ -15,6 +16,26 @@ export function getHighlights(
   if (state.selection.cell !== null) {
     for (const peer of peersOf(state.selection.cell)) {
       map[peer.row]![peer.col] = 'peer';
+    }
+  }
+
+  // Conflict (overwrites peer)
+  for (const unit of [...rowsOf(), ...colsOf(), ...boxesOf()]) {
+    const seen = new Map<Digit, CellCoord[]>();
+    for (const coord of unit) {
+      const v = state.cells[coord.row]![coord.col]!.value;
+      if (v !== null) {
+        const existing = seen.get(v) ?? [];
+        existing.push(coord);
+        seen.set(v, existing);
+      }
+    }
+    for (const coords of seen.values()) {
+      if (coords.length > 1) {
+        for (const coord of coords) {
+          map[coord.row]![coord.col] = 'conflict';
+        }
+      }
     }
   }
 

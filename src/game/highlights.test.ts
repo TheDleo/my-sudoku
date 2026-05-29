@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { initialEmptyState } from './reducers';
 import { getHighlights } from './highlights';
+import { cloneCells } from './helpers';
+import type { Digit } from '../types';
 
 describe('getHighlights', () => {
   describe('empty state', () => {
@@ -78,6 +80,49 @@ describe('getHighlights', () => {
       };
       const map = getHighlights(state);
       expect(map[0]![0]).toBe('selected');
+    });
+  });
+
+  describe('conflict', () => {
+    it('marks both cells as "conflict" when two cells share the same digit in the same row', () => {
+      const cells = cloneCells(initialEmptyState.cells);
+      cells[0]![0]!.value = 5 as Digit;
+      cells[0]![3]!.value = 5 as Digit;
+      const state = { ...initialEmptyState, cells };
+      const map = getHighlights(state);
+      expect(map[0]![0]).toBe('conflict');
+      expect(map[0]![3]).toBe('conflict');
+      expect(map[1]![0]).toBeNull();
+    });
+
+    it('marks both cells as "conflict" when two cells share the same digit in the same column', () => {
+      const cells = cloneCells(initialEmptyState.cells);
+      cells[0]![0]!.value = 3 as Digit;
+      cells[5]![0]!.value = 3 as Digit;
+      const state = { ...initialEmptyState, cells };
+      const map = getHighlights(state);
+      expect(map[0]![0]).toBe('conflict');
+      expect(map[5]![0]).toBe('conflict');
+    });
+
+    it('marks both cells as "conflict" when two cells share the same digit in the same box', () => {
+      const cells = cloneCells(initialEmptyState.cells);
+      cells[0]![0]!.value = 7 as Digit;
+      cells[2]![2]!.value = 7 as Digit;
+      const state = { ...initialEmptyState, cells };
+      const map = getHighlights(state);
+      expect(map[0]![0]).toBe('conflict');
+      expect(map[2]![2]).toBe('conflict');
+    });
+
+    it('does not mark unique digits as conflicts', () => {
+      const cells = cloneCells(initialEmptyState.cells);
+      cells[0]![0]!.value = 5 as Digit;
+      cells[0]![3]!.value = 6 as Digit;
+      const state = { ...initialEmptyState, cells };
+      const map = getHighlights(state);
+      expect(map[0]![0]).toBeNull();
+      expect(map[0]![3]).toBeNull();
     });
   });
 });
