@@ -1,4 +1,5 @@
 import { Board } from './game/Board';
+import { NumberPad } from './game/NumberPad';
 import { useGameStore } from './game/store';
 
 export function App() {
@@ -12,6 +13,7 @@ export function App() {
     <main onClick={handleMainClick}>
       <h1>Sudoku</h1>
       <Board />
+      <NumberPad />
     </main>
   );
 }
