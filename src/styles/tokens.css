@@ -10,6 +10,7 @@
   --cell-given: #1a1a1a;
   --cell-user: #2563eb;
   --cell-selected: #dbeafe;
+  --cell-selected-pencil: #dcfce7;
   --cell-peer: #f1f5f9;
   --cell-highlight: #fef3c7;
   --cell-conflict: #fee2e2;
@@ -28,6 +29,7 @@ html[data-theme='dark'] {
   --cell-given: #e8e8e8;
   --cell-user: #60a5fa;
   --cell-selected: #1e3a5f;
+  --cell-selected-pencil: #1a3a2a;
   --cell-peer: #1f1f23;
   --cell-highlight: #3d3416;
   --cell-conflict: #4a1f1f;
@@ -47,6 +49,7 @@ html[data-theme='dark'] {
     --cell-given: #e8e8e8;
     --cell-user: #60a5fa;
     --cell-selected: #1e3a5f;
+    --cell-selected-pencil: #1a3a2a;
     --cell-peer: #1f1f23;
     --cell-highlight: #3d3416;
     --cell-conflict: #4a1f1f;

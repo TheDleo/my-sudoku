@@ -12,6 +12,10 @@
   background: var(--cell-selected);
 }
 
+.cell--selected-pencil {
+  background: var(--cell-selected-pencil);
+}
+
 .cell--peer {
   background: var(--cell-peer);
 }

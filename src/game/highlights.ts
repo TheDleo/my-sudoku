@@ -3,17 +3,22 @@ import { boxesOf, colsOf, peersOf, rowsOf } from '../solver/units';
 import type { CellCoord, Digit } from '../types';
 import type { GameState } from './types';
 
-export type CellHighlight = 'selected' | 'conflict' | 'peer' | 'possible' | null;
+export type CellHighlight =
+  | 'selected'
+  | 'selected-pencil'
+  | 'conflict'
+  | 'peer'
+  | 'possible'
+  | null;
 export type HighlightMap = CellHighlight[][];
 
 export function getHighlights(
-  state: Pick<GameState, 'cells' | 'given' | 'selection'>,
+  state: Pick<GameState, 'cells' | 'given' | 'selection' | 'pencilMode'>,
 ): HighlightMap {
   const map: HighlightMap = Array.from({ length: 9 }, () =>
     Array.from({ length: 9 }, (): CellHighlight => null),
   );
 
-  // Possible (lowest priority — applied first, overwritten by higher tiers)
   if (state.selection.number !== null) {
     const values = state.cells.map((row) => row.map((c) => c.value));
     const candidates = computeCandidates(values);
@@ -26,14 +31,12 @@ export function getHighlights(
     }
   }
 
-  // Peer (lower priority — overwritten by conflict and selected below)
   if (state.selection.cell !== null) {
     for (const peer of peersOf(state.selection.cell)) {
       map[peer.row]![peer.col] = 'peer';
     }
   }
 
-  // Conflict (overwrites peer)
   for (const unit of [...rowsOf(), ...colsOf(), ...boxesOf()]) {
     const seen = new Map<Digit, CellCoord[]>();
     for (const coord of unit) {
@@ -53,10 +56,9 @@ export function getHighlights(
     }
   }
 
-  // Selected (highest priority)
   if (state.selection.cell !== null) {
     const { row, col } = state.selection.cell;
-    map[row]![col] = 'selected';
+    map[row]![col] = state.pencilMode ? 'selected-pencil' : 'selected';
   }
 
   return map;

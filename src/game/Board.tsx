@@ -9,9 +9,10 @@ export function Board() {
   const cells = useGameStore((s) => s.cells);
   const given = useGameStore((s) => s.given);
   const selection = useGameStore((s) => s.selection);
+  const pencilMode = useGameStore((s) => s.pencilMode);
   const boardRef = useRef<HTMLDivElement>(null);
 
-  const highlights = getHighlights({ cells, given, selection });
+  const highlights = getHighlights({ cells, given, selection, pencilMode });
 
   useEffect(() => {
     const el = boardRef.current;

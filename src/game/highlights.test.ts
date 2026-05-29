@@ -218,3 +218,25 @@ describe('getHighlights', () => {
     });
   });
 });
+
+describe('selected-pencil', () => {
+  it('marks the selected cell as "selected-pencil" when pencilMode is true', () => {
+    const state = {
+      ...initialEmptyState,
+      selection: { cell: { row: 2, col: 3 }, number: null },
+      pencilMode: true,
+    };
+    const map = getHighlights(state);
+    expect(map[2]![3]).toBe('selected-pencil');
+  });
+
+  it('marks the selected cell as "selected" when pencilMode is false', () => {
+    const state = {
+      ...initialEmptyState,
+      selection: { cell: { row: 2, col: 3 }, number: null },
+      pencilMode: false,
+    };
+    const map = getHighlights(state);
+    expect(map[2]![3]).toBe('selected');
+  });
+});
