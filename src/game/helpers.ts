@@ -1,4 +1,5 @@
 import type { Cell, Digit } from '../types';
+import { peersOf } from '../solver/units';
 
 const SIZE = 9;
 
@@ -39,4 +40,22 @@ export function getRemainingCounts(cells: Cell[][]): Record<Digit, number> {
     Digit,
     number
   >;
+}
+
+export function computeCandidates(cells: Cell[][]): Cell[][] {
+  return cells.map((row, r) =>
+    row.map((cell, c) => {
+      if (cell.value !== null) return cell;
+      const peerValues = new Set<Digit>();
+      for (const p of peersOf({ row: r, col: c })) {
+        const v = cells[p.row]![p.col]!.value;
+        if (v !== null) peerValues.add(v);
+      }
+      const valid = (DIGITS as readonly Digit[]).filter((d) => !peerValues.has(d));
+      return {
+        value: null,
+        pencilMarks: new Set<Digit>([...cell.pencilMarks, ...valid]),
+      };
+    }),
+  );
 }

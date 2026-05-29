@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { Cell, Digit } from '../types';
-import { cloneCells, empty9x9, getRemainingCounts } from './helpers';
+import { cloneCells, computeCandidates, empty9x9, getRemainingCounts } from './helpers';
 
 describe('empty9x9', () => {
   it('returns a 9x9 grid of the value when given a non-function', () => {
@@ -64,5 +64,57 @@ describe('getRemainingCounts', () => {
     const counts = getRemainingCounts(cells);
     expect(counts[3 as Digit]).toBe(0);
     expect(counts[1 as Digit]).toBe(9);
+  });
+});
+
+describe('computeCandidates', () => {
+  it('gives every empty cell all 9 candidates on an empty board', () => {
+    const cells = empty9x9<Cell>(() => ({ value: null, pencilMarks: new Set<Digit>() }));
+    const result = computeCandidates(cells);
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        expect(result[r]![c]!.pencilMarks.size).toBe(9);
+      }
+    }
+  });
+
+  it('excludes digits already placed in peer cells', () => {
+    const cells = empty9x9<Cell>(() => ({ value: null, pencilMarks: new Set<Digit>() }));
+    // Place 1–5 in row-0 peers of (0,0)
+    cells[0]![1]!.value = 1 as Digit;
+    cells[0]![2]!.value = 2 as Digit;
+    cells[0]![3]!.value = 3 as Digit;
+    cells[0]![4]!.value = 4 as Digit;
+    cells[0]![5]!.value = 5 as Digit;
+    const result = computeCandidates(cells);
+    const marks = result[0]![0]!.pencilMarks;
+    expect(marks.has(1 as Digit)).toBe(false);
+    expect(marks.has(5 as Digit)).toBe(false);
+    expect(marks.has(6 as Digit)).toBe(true);
+    expect(marks.has(9 as Digit)).toBe(true);
+  });
+
+  it('preserves an existing pencil mark that is a valid candidate (union)', () => {
+    const cells = empty9x9<Cell>(() => ({ value: null, pencilMarks: new Set<Digit>() }));
+    cells[0]![0]!.pencilMarks.add(6 as Digit);
+    const result = computeCandidates(cells);
+    expect(result[0]![0]!.pencilMarks.has(6 as Digit)).toBe(true);
+  });
+
+  it('preserves an existing pencil mark that is NOT a valid candidate (no removal)', () => {
+    const cells = empty9x9<Cell>(() => ({ value: null, pencilMarks: new Set<Digit>() }));
+    // Peer (0,1) has 1 → 1 is invalid for (0,0), but the existing mark must survive
+    cells[0]![1]!.value = 1 as Digit;
+    cells[0]![0]!.pencilMarks.add(1 as Digit);
+    const result = computeCandidates(cells);
+    expect(result[0]![0]!.pencilMarks.has(1 as Digit)).toBe(true);
+  });
+
+  it('leaves a cell with a placed value completely untouched', () => {
+    const cells = empty9x9<Cell>(() => ({ value: null, pencilMarks: new Set<Digit>() }));
+    cells[0]![0]!.value = 5 as Digit;
+    const result = computeCandidates(cells);
+    expect(result[0]![0]!.value).toBe(5);
+    expect(result[0]![0]!.pencilMarks.size).toBe(0);
   });
 });
