@@ -1,5 +1,5 @@
 import type { Cell, CellCoord, Digit, Puzzle } from '../types';
-import { cloneCells, empty9x9 } from './helpers';
+import { cloneCells, computeCandidates, empty9x9 } from './helpers';
 import { peersOf } from '../solver/units';
 import type { GameSnapshot, GameState } from './types';
 
@@ -148,6 +148,10 @@ export function redo(state: GameState): GameState {
       future: state.history.future.slice(0, -1),
     },
   };
+}
+
+export function fillCandidates(state: GameState): GameState {
+  return { ...state, cells: computeCandidates(state.cells) };
 }
 
 // Re-export shared types for convenience.

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import type { Digit } from '../types';
 import {
   eraseCell,
+  fillCandidates,
   initialEmptyState,
   loadPuzzle,
   placeDigit,
@@ -416,5 +417,25 @@ describe('placeDigit — auto-removal of peer pencil marks', () => {
     const reverted = undo(placed);
     expect(reverted.cells[0]![1]!.pencilMarks.has(3 as Digit)).toBe(true);
     expect(reverted.cells[1]![1]!.value).toBeNull();
+  });
+});
+
+describe('fillCandidates', () => {
+  it('fills valid candidates into empty cells', () => {
+    // makePuzzle sets (0,0)=5 and (4,4)=7; cell (1,1) is empty.
+    // (0,0) is in the same box as (1,1), so 5 must not appear as a candidate.
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const next = withSnapshot(loaded, fillCandidates);
+    const marks = next.cells[1]![1]!.pencilMarks;
+    expect(marks.has(5 as Digit)).toBe(false);
+    expect(marks.size).toBeGreaterThan(0);
+  });
+
+  it('undo after fillCandidates restores the prior empty pencil marks', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const filled = withSnapshot(loaded, fillCandidates);
+    expect(filled.cells[1]![1]!.pencilMarks.size).toBeGreaterThan(0);
+    const reverted = undo(filled);
+    expect(reverted.cells[1]![1]!.pencilMarks.size).toBe(0);
   });
 });
