@@ -1,0 +1,35 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  aspect-ratio: 1;
+  width: min(100%, 500px);
+  border: 2px solid var(--fg);
+}
+
+/* Thin borders on all cells */
+.board .cell {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* No right border on last column — outer board border handles it */
+.board .cell:nth-child(9n) {
+  border-right: none;
+}
+
+/* No bottom border on last row — outer board border handles it */
+.board .cell:nth-child(n + 73) {
+  border-bottom: none;
+}
+
+/* Thick right border after box columns 3 and 6 */
+.board .cell:nth-child(9n + 3),
+.board .cell:nth-child(9n + 6) {
+  border-right: 2px solid var(--fg);
+}
+
+/* Thick bottom border after box rows 3 and 6 (cells 19–27 and 46–54) */
+.board .cell:nth-child(n + 19):nth-child(-n + 27),
+.board .cell:nth-child(n + 46):nth-child(-n + 54) {
+  border-bottom: 2px solid var(--fg);
+}
