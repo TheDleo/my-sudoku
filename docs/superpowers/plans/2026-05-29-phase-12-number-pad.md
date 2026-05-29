@@ -116,7 +116,7 @@ import type { Cell, Digit } from '../types';
 npx vitest run src/game/helpers.test.ts
 ```
 
-Expected: all tests in `helpers.test.ts` passing (5 existing + 3 new = 8 total).
+Expected: all tests in `helpers.test.ts` passing (3 existing + 3 new = 6 total).
 
 - [ ] **Step 5: Commit**
 

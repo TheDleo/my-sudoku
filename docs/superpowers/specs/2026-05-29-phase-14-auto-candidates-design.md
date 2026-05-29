@@ -29,12 +29,10 @@ ActionBar (button click)
 
 ### `computeCandidates(cells: Cell[][]): Cell[][]`
 
-Pure function in `helpers.ts`. For each cell:
+Pure function in `helpers.ts`. Delegates to `src/solver/candidates.ts:computeCandidates` to compute valid digits per empty cell, then unions results with existing `pencilMarks`. For each cell:
 
 - If `cell.value !== null`: returned unchanged.
-- If `cell.value === null`: compute `validCandidates = {1..9} minus values of all peers`. Return a new cell whose `pencilMarks` is `existing pencilMarks ∪ validCandidates`.
-
-Requires a new import of `peersOf` from `src/solver/units` in `helpers.ts` (that module already uses it in `reducers.ts`).
+- If `cell.value === null`: compute `validCandidates` via solver, return new cell with `pencilMarks = existing ∪ validCandidates`.
 
 ---
 
@@ -49,9 +47,9 @@ Requires a new import of `peersOf` from `src/solver/units` in `helpers.ts` (that
 | `src/game/types.ts`           | Modify | Add `fillCandidates: () => void` to `GameStore` |
 | `src/game/store.ts`           | Modify | Wire `fillCandidates` action                    |
 | `src/game/ActionBar.tsx`      | Modify | Add "Candidates" button                         |
-| `src/game/ActionBar.test.tsx` | Modify | RTL test for button                             |
+| `src/game/ActionBar.test.tsx` | Modify | RTL test for the new button                     |
 
-No new files. No CSS changes needed.
+No new files. No new CSS files.
 
 ---
 
