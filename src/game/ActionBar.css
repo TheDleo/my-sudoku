@@ -1,0 +1,23 @@
+.action-bar {
+  display: flex;
+  width: min(100%, 500px);
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.action-bar__pencil {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 0.875rem;
+  min-height: 44px;
+}
+
+.action-bar__pencil--active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
