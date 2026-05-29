@@ -235,7 +235,7 @@ describe('handleKey', () => {
     });
 
     it('Ctrl+Shift+Z calls redo, not undo', () => {
-      const e = makeEvent('z', true, true, false);
+      const e = makeEvent('Z', true, true, false);
       const actions = makeActions();
       handleKey(e, makeState(), actions);
       expect(actions.redo).toHaveBeenCalled();
@@ -244,7 +244,7 @@ describe('handleKey', () => {
     });
 
     it('Cmd+Shift+Z calls redo', () => {
-      const e = makeEvent('z', true, false, true);
+      const e = makeEvent('Z', true, false, true);
       const actions = makeActions();
       handleKey(e, makeState(), actions);
       expect(actions.redo).toHaveBeenCalled();

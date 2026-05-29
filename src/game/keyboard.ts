@@ -17,7 +17,7 @@ export function handleKey(event: KeyboardEvent, state: KeyState, actions: KeyAct
   const { key, shiftKey, ctrlKey, metaKey } = event;
   const { selection, pencilMode } = state;
 
-  if ((ctrlKey || metaKey) && key === 'z') {
+  if ((ctrlKey || metaKey) && key.toLowerCase() === 'z') {
     event.preventDefault();
     if (shiftKey) {
       actions.redo();
