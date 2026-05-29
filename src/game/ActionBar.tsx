@@ -8,6 +8,10 @@ export function ActionBar() {
     useGameStore.getState().togglePencilMode();
   };
 
+  const handleFillCandidates = () => {
+    useGameStore.getState().fillCandidates();
+  };
+
   return (
     <div className="action-bar" onClick={(e) => e.stopPropagation()}>
       <button
@@ -16,6 +20,9 @@ export function ActionBar() {
         onClick={handlePencilToggle}
       >
         ✏️ Pencil
+      </button>
+      <button className="action-bar__candidates" onClick={handleFillCandidates}>
+        Candidates
       </button>
     </div>
   );
