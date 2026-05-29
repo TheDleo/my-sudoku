@@ -25,7 +25,6 @@ Render a static board from store state. No interaction yet — just visual. Wire
 
 ### Deferred to later phases
 
-- **Possible-placement highlights** — **included in Phase 10** (not deferred; reversed during brainstorming)
 - Cell click/keyboard interaction — Phase 11
 - Number pad — Phase 12
 - Auto-pencil-mark removal on placement — Phase 13
@@ -103,7 +102,7 @@ const selection = useGameStore((s) => s.selection);
 
 - All cells: `border-right: 1px solid var(--border); border-bottom: 1px solid var(--border)`
 - After column 3 and 6 (`nth-child(9n+3)`, `nth-child(9n+6)`): `border-right: 2px solid var(--fg)`
-- After row 3 and 6 (cells 28–36 and 55–63, i.e., `nth-child(n+28):nth-child(-n+36)` etc.): `border-bottom: 2px solid var(--fg)`
+- After row 3 and 6 (cells 19–27 and 46–54, i.e., `nth-child(n+19):nth-child(-n+27)` and `nth-child(n+46):nth-child(-n+54)`): `border-bottom: 2px solid var(--fg)`
 - Leftmost cells (`nth-child(9n+1)`): no left border (outer border handles it)
 - Top row cells (1–9): no top border
 
