@@ -1,0 +1,58 @@
+.landing-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  min-width: 280px;
+}
+
+.landing-title {
+  margin: 0;
+  color: var(--fg);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.landing-difficulties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+.landing-btn {
+  padding: 12px 24px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 1rem;
+  min-height: 44px;
+}
+
+.landing-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.landing-btn--resume {
+  width: 100%;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
