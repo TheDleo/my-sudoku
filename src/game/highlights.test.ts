@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { initialEmptyState } from './reducers';
 import { getHighlights } from './highlights';
-import { cloneCells } from './helpers';
-import type { Digit } from '../types';
+import { cloneCells, empty9x9 } from './helpers';
+import type { Cell, Digit } from '../types';
 import type { Step } from '../solver/types';
 
 describe('getHighlights', () => {
@@ -316,5 +316,30 @@ describe('hint tier', () => {
     };
     const map = getHighlights(state);
     expect(map[2]![3]).toBe('hint');
+  });
+
+  it('"hint" beats "possible": a hint cell that is also a possible placement shows "hint"', () => {
+    // Select number 9; (0,8) is a possible placement for 9 AND a hint highlight
+    const cells = empty9x9<Cell>(() => ({ value: null, pencilMarks: new Set<Digit>() }));
+    // Place 1–8 in row 0 to make (0,8) a nakedSingle for 9
+    for (let c = 0; c < 8; c++) {
+      cells[0]![c]!.value = (c + 1) as Digit;
+    }
+    const step: Step = {
+      technique: 'nakedSingle',
+      highlights: [{ row: 0, col: 8 }],
+      placements: [],
+      eliminations: [],
+      explanation: 'test',
+    };
+    const state = {
+      ...initialEmptyState,
+      cells,
+      currentHint: step,
+      hintLevel: 3 as const,
+      selection: { cell: null, number: 9 as Digit }, // 9 is selected as a number
+    };
+    const map = getHighlights(state);
+    expect(map[0]![8]).toBe('hint');
   });
 });

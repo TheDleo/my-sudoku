@@ -505,7 +505,7 @@ describe('dismissHint', () => {
 });
 
 describe('withSnapshot — hint auto-dismiss', () => {
-  it('clears currentHint when a board mutation commits', () => {
+  it('clears currentHint when placeDigit commits a mutation', () => {
     const loaded = loadPuzzle(initialEmptyState, makePuzzle());
     const stateWithHint = {
       ...loaded,
@@ -540,6 +540,47 @@ describe('undo/redo — hint auto-dismiss', () => {
       history: { past: [], future: [{ cells: initialEmptyState.cells, pencilMode: false }] },
     };
     const next = redo(state);
+    expect(next.currentHint).toBeNull();
+    expect(next.hintLevel).toBe(1);
+  });
+});
+
+describe('togglePencilMode — hint preserved', () => {
+  it('does not clear currentHint when toggling pencil mode', () => {
+    const mockStep: Step = {
+      technique: 'nakedSingle',
+      highlights: [{ row: 0, col: 8 }],
+      placements: [{ cell: { row: 0, col: 8 }, digit: 9 as Digit }],
+      eliminations: [],
+      explanation: 'Cell (0,8) can only contain 9.',
+    };
+    const state = { ...initialEmptyState, currentHint: mockStep, hintLevel: 2 as const };
+    const next = withSnapshot(state, togglePencilMode);
+    expect(next.currentHint).not.toBeNull();
+    expect(next.hintLevel).toBe(2);
+  });
+});
+
+describe('eraseCell — hint dismissed', () => {
+  it('clears currentHint when a cell value is erased', () => {
+    const mockStep: Step = {
+      technique: 'nakedSingle',
+      highlights: [{ row: 0, col: 8 }],
+      placements: [{ cell: { row: 0, col: 8 }, digit: 9 as Digit }],
+      eliminations: [],
+      explanation: 'Cell (0,8) can only contain 9.',
+    };
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const cells = cloneCellsForTest(loaded.cells);
+    cells[1]![1]!.value = 3 as Digit; // place a non-given value
+    const state = {
+      ...loaded,
+      cells,
+      currentHint: mockStep,
+      hintLevel: 2 as const,
+      selection: { cell: { row: 1, col: 1 }, number: null },
+    };
+    const next = withSnapshot(state, eraseCell);
     expect(next.currentHint).toBeNull();
     expect(next.hintLevel).toBe(1);
   });

@@ -69,6 +69,8 @@ export function placeDigit(state: GameState, digit: Digit): GameState {
     ...state,
     cells: nextCells,
     mistakes: conflicted ? state.mistakes + 1 : state.mistakes,
+    currentHint: null,
+    hintLevel: 1,
   };
 }
 
@@ -80,12 +82,12 @@ export function eraseCell(state: GameState): GameState {
   if (cell.value !== null) {
     const nextCells = cloneCells(state.cells);
     nextCells[sel.row]![sel.col]!.value = null;
-    return { ...state, cells: nextCells };
+    return { ...state, cells: nextCells, currentHint: null, hintLevel: 1 };
   }
   if (cell.pencilMarks.size > 0) {
     const nextCells = cloneCells(state.cells);
     nextCells[sel.row]![sel.col]!.pencilMarks = new Set<Digit>();
-    return { ...state, cells: nextCells };
+    return { ...state, cells: nextCells, currentHint: null, hintLevel: 1 };
   }
   return state;
 }
@@ -115,8 +117,6 @@ export function withSnapshot(state: GameState, mutate: (s: GameState) => GameSta
   if (next === state) return state;
   return {
     ...next,
-    currentHint: null,
-    hintLevel: 1,
     history: { past: [...state.history.past, snapshot], future: [] },
   };
 }
