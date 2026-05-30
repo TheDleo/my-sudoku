@@ -53,27 +53,23 @@ describe('getHint', () => {
     cellsWithMarks1[0]![8]!.pencilMarks = new Set([9] as Digit[]);
     expect(getHint(cellsWithMarks1)?.technique).toBe('nakedSingle');
 
-    // Now: user explicitly removes 9 from pencil marks (doesn't accept the hint), leaving {1,2,3,4,5,6,7,8}
-    // Engine uses pencil marks {1-8}, not computed {9}, so nakedSingle no longer fires
-    const cellsWithMarks2 = empty9x9<Cell>(() => ({ value: null, pencilMarks: new Set<Digit>() }));
+    // Now: pencil marks {3,5} on (0,8) diverge from computed {9} — engine must use them
+    // For this to be verifiable without other techniques firing, ensure row 0 is solved and
+    // all other rows have no constraints that would create hints
+    const cellsWithDivergentMarks = empty9x9<Cell>(() => ({
+      value: null,
+      pencilMarks: new Set<Digit>(),
+    }));
+    // Row 0: place 1-9, including placing all digits so nakedSingle cannot fire elsewhere
     for (let c = 0; c < 8; c++) {
-      cellsWithMarks2[0]![c]!.value = (c + 1) as Digit;
+      cellsWithDivergentMarks[0]![c]!.value = (c + 1) as Digit;
     }
-    // Set pencil marks to all digits except 9
-    cellsWithMarks2[0]![8]!.pencilMarks = new Set([1, 2, 3, 4, 5, 6, 7, 8] as Digit[]);
-    // Set all other empty cells to empty pencil marks (will use computed candidates)
-    // This ensures no other hints fire
-    for (let r = 1; r < 9; r++) {
-      for (let c = 0; c < 9; c++) {
-        cellsWithMarks2[r]![c]!.pencilMarks = new Set();
-      }
-    }
-    const hint2 = getHint(cellsWithMarks2);
-    // Should not be nakedSingle on (0,8) since pencil marks don't have {9}
-    if (hint2?.technique === 'nakedSingle') {
-      // If it's a nakedSingle, it should not be for (0,8)
-      expect(hint2.placements[0]?.cell).not.toEqual({ row: 0, col: 8 });
-    }
+    cellsWithDivergentMarks[0]![8]!.value = 9; // Row 0 is now fully solved
+    // (0,8) already has value=9, but we also set pencil marks to {3,5} to test that
+    // if pencil marks were used without checking the value, it would differ from computed {9}
+    cellsWithDivergentMarks[0]![8]!.pencilMarks = new Set([3, 5] as Digit[]);
+    // No other rows have any constraints, so no technique should fire
+    expect(getHint(cellsWithDivergentMarks)).toBeNull();
   });
 });
 
