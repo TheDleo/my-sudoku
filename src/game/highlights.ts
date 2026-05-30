@@ -35,15 +35,15 @@ export function getHighlights(
     }
   }
 
-  if (state.hintLevel >= 3 && state.currentHint !== null) {
-    for (const coord of state.currentHint.highlights) {
-      map[coord.row]![coord.col] = 'hint';
-    }
-  }
-
   if (state.selection.cell !== null) {
     for (const peer of peersOf(state.selection.cell)) {
       map[peer.row]![peer.col] = 'peer';
+    }
+  }
+
+  if (state.hintLevel >= 3 && state.currentHint !== null) {
+    for (const coord of state.currentHint.highlights) {
+      map[coord.row]![coord.col] = 'hint';
     }
   }
 

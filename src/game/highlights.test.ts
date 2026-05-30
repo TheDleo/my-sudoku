@@ -305,4 +305,16 @@ describe('hint tier', () => {
     const map = getHighlights(state);
     expect(map[2]![3]).toBe('selected');
   });
+
+  it('"hint" beats "peer": a peer cell that is also a hint cell shows "hint"', () => {
+    const state = {
+      ...initialEmptyState,
+      currentHint: mockStep,
+      hintLevel: 3 as const,
+      // (2,0) selected; (2,3) is in the same row — a peer — AND a hint highlight
+      selection: { cell: { row: 2, col: 0 }, number: null },
+    };
+    const map = getHighlights(state);
+    expect(map[2]![3]).toBe('hint');
+  });
 });
