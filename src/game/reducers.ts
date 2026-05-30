@@ -1,4 +1,4 @@
-import type { Cell, CellCoord, Digit, Puzzle } from '../types';
+import type { Cell, CellCoord, Digit, Puzzle, SolvedGrid } from '../types';
 import { cloneCells, computeCandidates, empty9x9 } from './helpers';
 import { peersOf } from '../solver/units';
 import { getHint } from '../hints/engine';
@@ -59,6 +59,15 @@ function isConflictingPlacement(cells: Cell[][], sel: CellCoord, digit: Digit): 
   return peersOf(sel).some((peer) => cells[peer.row]![peer.col]!.value === digit);
 }
 
+function isSolved(cells: Cell[][], solution: SolvedGrid): boolean {
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      if (cells[r]![c]!.value !== solution[r]![c]) return false;
+    }
+  }
+  return true;
+}
+
 export function placeDigit(state: GameState, digit: Digit): GameState {
   const sel = state.selection.cell;
   if (sel === null) return state;
@@ -69,6 +78,7 @@ export function placeDigit(state: GameState, digit: Digit): GameState {
     nextCells[peer.row]![peer.col]!.pencilMarks.delete(digit);
   }
   const conflicted = isConflictingPlacement(state.cells, sel, digit);
+  const won = isSolved(nextCells, state.puzzle.solution);
   return {
     ...state,
     cells: nextCells,
@@ -76,6 +86,7 @@ export function placeDigit(state: GameState, digit: Digit): GameState {
     mistakes: conflicted ? state.mistakes + 1 : state.mistakes,
     currentHint: null,
     hintLevel: 1,
+    won,
   };
 }
 

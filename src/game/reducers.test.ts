@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import type { Digit } from '../types';
+import type { Digit, Puzzle, SolvedGrid } from '../types';
 import type { Step } from '../solver/types';
 import {
   advanceHint,
   dismissHint,
+  dismissWin,
   eraseCell,
   fillCandidates,
   initialEmptyState,
@@ -605,5 +606,87 @@ describe('eraseCell — hint dismissed', () => {
     const next = withSnapshot(state, eraseCell);
     expect(next.currentHint).toBeNull();
     expect(next.hintLevel).toBe(1);
+  });
+});
+
+describe('initialEmptyState.won', () => {
+  it('is false', () => {
+    expect(initialEmptyState.won).toBe(false);
+  });
+});
+
+describe('loadPuzzle — won', () => {
+  it('resets won to false', () => {
+    const dirty = { ...initialEmptyState, won: true };
+    expect(loadPuzzle(dirty, makePuzzle()).won).toBe(false);
+  });
+});
+
+describe('placeDigit — win detection', () => {
+  function makeAlmostWonState(): { state: ReturnType<typeof loadPuzzle>; solution: SolvedGrid } {
+    // solution[r][c] = ((r + c) % 9) + 1
+    const solution: SolvedGrid = Array.from({ length: 9 }, (_, r) =>
+      Array.from({ length: 9 }, (_, c) => (((r + c) % 9) + 1) as Digit),
+    );
+    const puzzle: Puzzle = {
+      id: 'win-test',
+      difficulty: 'easy',
+      initialBoard: Array.from({ length: 9 }, () =>
+        Array.from({ length: 9 }, () => null as Digit | null),
+      ),
+      solution,
+    };
+    // All cells filled with solution values except (8,8)
+    const cells = solution.map((row, r) =>
+      row.map((v, c) => ({
+        value: r === 8 && c === 8 ? null : v,
+        pencilMarks: new Set<Digit>(),
+      })),
+    );
+    const given = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => false));
+    const state = {
+      ...initialEmptyState,
+      puzzle,
+      cells,
+      given,
+      selection: { cell: { row: 8, col: 8 }, number: null },
+    };
+    return { state, solution };
+  }
+
+  it('sets won to true when the placed digit completes the solution', () => {
+    const { state, solution } = makeAlmostWonState();
+    // solution[8][8] = ((8 + 8) % 9 + 1) = (7 + 1) = 8
+    const correctDigit = solution[8]![8]!;
+    const next = placeDigit(state, correctDigit);
+    expect(next.won).toBe(true);
+  });
+
+  it('leaves won false when the placed digit does not complete the solution', () => {
+    const { state, solution } = makeAlmostWonState();
+    // solution[8][8] is 8; place 1 instead (wrong digit)
+    const wrongDigit = (solution[8]![8]! === 1 ? 2 : 1) as Digit;
+    const next = placeDigit(state, wrongDigit);
+    expect(next.won).toBe(false);
+  });
+
+  it('leaves won false when only some cells are filled', () => {
+    const puzzle = makePuzzle();
+    const loaded = loadPuzzle(initialEmptyState, puzzle);
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const next = placeDigit(selected, 3 as Digit);
+    expect(next.won).toBe(false);
+  });
+});
+
+describe('dismissWin', () => {
+  it('sets won to false', () => {
+    const state = { ...initialEmptyState, won: true };
+    expect(dismissWin(state).won).toBe(false);
+  });
+
+  it('returns same reference when already false', () => {
+    expect(dismissWin(initialEmptyState)).not.toBe(initialEmptyState);
+    expect(dismissWin(initialEmptyState).won).toBe(false);
   });
 });
