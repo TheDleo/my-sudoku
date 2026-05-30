@@ -1,12 +1,23 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { initialEmptyState } from './game/reducers';
 import { useGameStore } from './game/store';
 import { App } from './app';
+import * as persistence from './game/persistence';
+
+vi.mock('./generator/client', () => ({
+  workerClient: { getPuzzle: vi.fn() },
+}));
+
+vi.mock('./game/persistence', () => ({
+  load: vi.fn(),
+  save: vi.fn(),
+}));
 
 describe('App', () => {
   beforeEach(() => {
     useGameStore.setState({ ...initialEmptyState });
+    vi.mocked(persistence.load).mockReturnValue(null);
   });
 
   it('renders the Sudoku heading', () => {
