@@ -12,6 +12,7 @@ import {
   redo,
   requestHint,
   selectCell,
+  setScreen,
   setSelectedNumber,
   togglePencilMark,
   togglePencilMode,
@@ -30,6 +31,7 @@ describe('initialEmptyState', () => {
     expect(initialEmptyState.mistakes).toBe(0);
     expect(initialEmptyState.elapsedMs).toBe(0);
     expect(initialEmptyState.history).toEqual({ past: [], future: [] });
+    expect(initialEmptyState.screen).toBe('landing');
   });
 });
 
@@ -558,6 +560,19 @@ describe('togglePencilMode — hint preserved', () => {
     const next = withSnapshot(state, togglePencilMode);
     expect(next.currentHint).not.toBeNull();
     expect(next.hintLevel).toBe(2);
+  });
+});
+
+describe('setScreen', () => {
+  it("setScreen('game') sets screen to 'game'", () => {
+    const next = setScreen(initialEmptyState, 'game');
+    expect(next.screen).toBe('game');
+  });
+
+  it("setScreen('landing') sets screen to 'landing'", () => {
+    const state = { ...initialEmptyState, screen: 'game' as const };
+    const next = setScreen(state, 'landing');
+    expect(next.screen).toBe('landing');
   });
 });
 

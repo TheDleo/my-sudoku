@@ -183,5 +183,9 @@ export function dismissHint(state: GameState): GameState {
   return { ...state, currentHint: null, hintLevel: 1 };
 }
 
+export function setScreen(state: GameState, s: 'landing' | 'game'): GameState {
+  return { ...state, screen: s };
+}
+
 // Re-export shared types for convenience.
 export type { GameSnapshot, GameState };

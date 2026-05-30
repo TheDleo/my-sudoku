@@ -24,7 +24,7 @@ export const useGameStore = create<GameStore>()((set) => ({
   undo: () => set(reducers.undo),
   redo: () => set(reducers.redo),
 
-  setScreen: (s) => set((st) => ({ ...st, screen: s })),
+  setScreen: (s) => set((st) => reducers.setScreen(st, s)),
   resumeGame: () =>
     set(() => {
       const saved = persistence.load();
