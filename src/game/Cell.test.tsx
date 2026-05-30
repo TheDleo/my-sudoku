@@ -83,6 +83,33 @@ describe('Cell', () => {
       const { container } = render(<Cell row={0} col={0} highlight={null} />);
       expect(container.querySelector('.cell__pencil-grid')).toBeNull();
     });
+
+    it('applies cell__pencil-mark--highlighted to the pencil mark matching selection.number', () => {
+      seedCell(0, 0, null, [3, 5, 7] as Digit[]);
+      useGameStore.setState({ selection: { cell: null, number: 5 as Digit } });
+      const { container } = render(<Cell row={0} col={0} highlight={null} />);
+      const marks = container.querySelectorAll('.cell__pencil-mark');
+      // PENCIL_POSITIONS = [1,2,3,4,5,6,7,8,9] → digit 5 is at index 4, 3 at index 2, 7 at index 6
+      expect(marks[4]).toHaveClass('cell__pencil-mark--highlighted');
+      expect(marks[2]).not.toHaveClass('cell__pencil-mark--highlighted');
+      expect(marks[6]).not.toHaveClass('cell__pencil-mark--highlighted');
+    });
+
+    it('does not apply the highlighted class when selection.number is null', () => {
+      seedCell(0, 0, null, [5] as Digit[]);
+      useGameStore.setState({ selection: { cell: null, number: null } });
+      const { container } = render(<Cell row={0} col={0} highlight={null} />);
+      const marks = container.querySelectorAll('.cell__pencil-mark');
+      expect(marks[4]).not.toHaveClass('cell__pencil-mark--highlighted');
+    });
+
+    it('does not apply the highlighted class when selectedNumber is not in pencilMarks', () => {
+      seedCell(0, 0, null, [3, 7] as Digit[]);
+      useGameStore.setState({ selection: { cell: null, number: 5 as Digit } });
+      const { container } = render(<Cell row={0} col={0} highlight={null} />);
+      const marks = container.querySelectorAll('.cell__pencil-mark');
+      expect(marks[4]).not.toHaveClass('cell__pencil-mark--highlighted'); // 5 not in pencilMarks
+    });
   });
 
   describe('highlight classes', () => {

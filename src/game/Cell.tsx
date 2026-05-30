@@ -10,6 +10,7 @@ const PENCIL_POSITIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 export function Cell({ row, col, highlight }: Props) {
   const cell = useGameStore((s) => s.cells[row]![col]!);
   const isGiven = useGameStore((s) => s.given[row]![col]!);
+  const selectedNumber = useGameStore((s) => s.selection.number);
 
   const highlightClass = highlight !== null ? `cell--${highlight}` : '';
 
@@ -21,11 +22,17 @@ export function Cell({ row, col, highlight }: Props) {
         </span>
       ) : cell.pencilMarks.size > 0 ? (
         <div className="cell__pencil-grid">
-          {PENCIL_POSITIONS.map((d) => (
-            <span key={d} className="cell__pencil-mark">
-              {cell.pencilMarks.has(d as Digit) ? d : ''}
-            </span>
-          ))}
+          {PENCIL_POSITIONS.map((d) => {
+            const isHighlighted = selectedNumber === d && cell.pencilMarks.has(d as Digit);
+            return (
+              <span
+                key={d}
+                className={`cell__pencil-mark${isHighlighted ? ' cell__pencil-mark--highlighted' : ''}`}
+              >
+                {cell.pencilMarks.has(d as Digit) ? d : ''}
+              </span>
+            );
+          })}
         </div>
       ) : null}
     </div>

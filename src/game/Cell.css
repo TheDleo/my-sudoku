@@ -62,3 +62,8 @@
   justify-content: center;
   line-height: 1;
 }
+
+.cell__pencil-mark--highlighted {
+  background: #4ade80;
+  border-radius: 50%;
+}
