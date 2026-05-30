@@ -1,12 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import type { Digit } from '../types';
+import type { Step } from '../solver/types';
 import {
+  advanceHint,
+  dismissHint,
   eraseCell,
   fillCandidates,
   initialEmptyState,
   loadPuzzle,
   placeDigit,
   redo,
+  requestHint,
   selectCell,
   setSelectedNumber,
   togglePencilMark,
@@ -437,5 +441,105 @@ describe('fillCandidates', () => {
     expect(filled.cells[1]![1]!.pencilMarks.size).toBeGreaterThan(0);
     const reverted = undo(filled);
     expect(reverted.cells[1]![1]!.pencilMarks.size).toBe(0);
+  });
+});
+
+const mockStep: Step = {
+  technique: 'nakedSingle',
+  highlights: [{ row: 0, col: 8 }],
+  placements: [{ cell: { row: 0, col: 8 }, digit: 9 as Digit }],
+  eliminations: [],
+  explanation: 'Cell (0,8) can only contain 9.',
+};
+
+describe('requestHint', () => {
+  it('sets currentHint and hintLevel to 1 when a technique applies', () => {
+    const cells = cloneCellsForTest(initialEmptyState.cells);
+    for (let c = 0; c < 8; c++) {
+      cells[0]![c]!.value = (c + 1) as Digit;
+    }
+    const state = { ...initialEmptyState, cells };
+    const next = requestHint(state);
+    expect(next.currentHint).not.toBeNull();
+    expect(next.currentHint?.technique).toBe('nakedSingle');
+    expect(next.hintLevel).toBe(1);
+  });
+
+  it('sets currentHint to null when no technique applies', () => {
+    const next = requestHint(initialEmptyState);
+    expect(next.currentHint).toBeNull();
+    expect(next.hintLevel).toBe(1);
+  });
+});
+
+describe('advanceHint', () => {
+  it('increments hintLevel from 1 to 2', () => {
+    const state = { ...initialEmptyState, currentHint: mockStep, hintLevel: 1 as const };
+    expect(advanceHint(state).hintLevel).toBe(2);
+  });
+
+  it('increments hintLevel from 3 to 4', () => {
+    const state = { ...initialEmptyState, currentHint: mockStep, hintLevel: 3 as const };
+    expect(advanceHint(state).hintLevel).toBe(4);
+  });
+
+  it('does not go past 4', () => {
+    const state = { ...initialEmptyState, currentHint: mockStep, hintLevel: 4 as const };
+    expect(advanceHint(state).hintLevel).toBe(4);
+  });
+
+  it('is a no-op when currentHint is null', () => {
+    const next = advanceHint(initialEmptyState);
+    expect(next).toBe(initialEmptyState);
+  });
+});
+
+describe('dismissHint', () => {
+  it('sets currentHint to null and hintLevel to 1', () => {
+    const state = { ...initialEmptyState, currentHint: mockStep, hintLevel: 3 as const };
+    const next = dismissHint(state);
+    expect(next.currentHint).toBeNull();
+    expect(next.hintLevel).toBe(1);
+  });
+});
+
+describe('withSnapshot — hint auto-dismiss', () => {
+  it('clears currentHint when a board mutation commits', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const stateWithHint = {
+      ...loaded,
+      currentHint: mockStep,
+      hintLevel: 2 as const,
+      selection: { cell: { row: 1, col: 1 }, number: null },
+    };
+    const next = withSnapshot(stateWithHint, (s) => placeDigit(s, 3 as Digit));
+    expect(next.currentHint).toBeNull();
+    expect(next.hintLevel).toBe(1);
+  });
+});
+
+describe('undo/redo — hint auto-dismiss', () => {
+  it('undo clears currentHint', () => {
+    const state = {
+      ...initialEmptyState,
+      currentHint: mockStep,
+      hintLevel: 2 as const,
+      history: { past: [{ cells: initialEmptyState.cells, pencilMode: false }], future: [] },
+    };
+    const next = undo(state);
+    expect(next.currentHint).toBeNull();
+    expect(next.hintLevel).toBe(1);
+  });
+
+  it('redo clears currentHint', () => {
+    const state = {
+      ...initialEmptyState,
+      currentHint: mockStep,
+      hintLevel: 2 as const,
+      history: { past: [], future: [{ cells: initialEmptyState.cells, pencilMode: false }] },
+    };
+    const next = redo(state);
+    expect(next.currentHint).toBeNull();
+    expect(next.hintLevel).toBe(1);
   });
 });

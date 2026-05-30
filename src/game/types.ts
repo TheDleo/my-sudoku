@@ -1,4 +1,5 @@
 import type { Cell, CellCoord, Digit, Puzzle } from '../types';
+import type { Step } from '../solver/types';
 
 export type GameSnapshot = {
   cells: Cell[][];
@@ -14,6 +15,8 @@ export type GameState = {
   mistakes: number;
   elapsedMs: number;
   history: { past: GameSnapshot[]; future: GameSnapshot[] };
+  currentHint: Step | null;
+  hintLevel: 1 | 2 | 3 | 4;
 };
 
 export type GameStore = GameState & {
@@ -25,6 +28,9 @@ export type GameStore = GameState & {
   togglePencilMark: (d: Digit) => void;
   togglePencilMode: () => void;
   fillCandidates: () => void;
+  requestHint: () => void;
+  advanceHint: () => void;
+  dismissHint: () => void;
   undo: () => void;
   redo: () => void;
 };

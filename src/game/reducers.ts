@@ -1,6 +1,7 @@
 import type { Cell, CellCoord, Digit, Puzzle } from '../types';
 import { cloneCells, computeCandidates, empty9x9 } from './helpers';
 import { peersOf } from '../solver/units';
+import { getHint } from '../hints/engine';
 import type { GameSnapshot, GameState } from './types';
 
 const SENTINEL_PUZZLE: Puzzle = {
@@ -19,6 +20,8 @@ export const initialEmptyState: GameState = {
   mistakes: 0,
   elapsedMs: 0,
   history: { past: [], future: [] },
+  currentHint: null,
+  hintLevel: 1,
 };
 
 export function loadPuzzle(_state: GameState, puzzle: Puzzle): GameState {
@@ -35,6 +38,8 @@ export function loadPuzzle(_state: GameState, puzzle: Puzzle): GameState {
     mistakes: 0,
     elapsedMs: 0,
     history: { past: [], future: [] },
+    currentHint: null,
+    hintLevel: 1,
   };
 }
 
@@ -110,6 +115,8 @@ export function withSnapshot(state: GameState, mutate: (s: GameState) => GameSta
   if (next === state) return state;
   return {
     ...next,
+    currentHint: null,
+    hintLevel: 1,
     history: { past: [...state.history.past, snapshot], future: [] },
   };
 }
@@ -125,6 +132,8 @@ export function undo(state: GameState): GameState {
     ...state,
     cells: snapshot.cells,
     pencilMode: snapshot.pencilMode,
+    currentHint: null,
+    hintLevel: 1,
     history: {
       past: state.history.past.slice(0, -1),
       future: [...state.history.future, current],
@@ -143,6 +152,8 @@ export function redo(state: GameState): GameState {
     ...state,
     cells: snapshot.cells,
     pencilMode: snapshot.pencilMode,
+    currentHint: null,
+    hintLevel: 1,
     history: {
       past: [...state.history.past, current],
       future: state.history.future.slice(0, -1),
@@ -152,6 +163,21 @@ export function redo(state: GameState): GameState {
 
 export function fillCandidates(state: GameState): GameState {
   return { ...state, cells: computeCandidates(state.cells) };
+}
+
+export function requestHint(state: GameState): GameState {
+  const hint = getHint(state.cells);
+  return { ...state, currentHint: hint, hintLevel: 1 };
+}
+
+export function advanceHint(state: GameState): GameState {
+  if (state.currentHint === null) return state;
+  if (state.hintLevel >= 4) return state;
+  return { ...state, hintLevel: (state.hintLevel + 1) as 1 | 2 | 3 | 4 };
+}
+
+export function dismissHint(state: GameState): GameState {
+  return { ...state, currentHint: null, hintLevel: 1 };
 }
 
 // Re-export shared types for convenience.

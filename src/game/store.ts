@@ -17,6 +17,10 @@ export const useGameStore = create<GameStore>()((set) => ({
   togglePencilMode: () => set((s) => withSnapshot(s, reducers.togglePencilMode)),
   fillCandidates: () => set((s) => withSnapshot(s, reducers.fillCandidates)),
 
+  requestHint: () => set((s) => reducers.requestHint(s)),
+  advanceHint: () => set((s) => reducers.advanceHint(s)),
+  dismissHint: () => set((s) => reducers.dismissHint(s)),
+
   undo: () => set(reducers.undo),
   redo: () => set(reducers.redo),
 }));
@@ -41,6 +45,8 @@ useGameStore.subscribe((state: GameStore, prev: GameStore) => {
     mistakes: state.mistakes,
     elapsedMs: state.elapsedMs,
     history: state.history,
+    currentHint: null,
+    hintLevel: 1,
   };
   persistence.save(snapshot);
 });
