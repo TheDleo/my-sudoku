@@ -303,6 +303,7 @@ describe('withSnapshot', () => {
     const next = withSnapshot(selected, (s) => placeDigit(s, 3 as Digit));
     expect(next).toBe(selected);
     expect(next.history.past).toEqual([]);
+    expect(next.currentHint).toBe(selected.currentHint); // hint survives no-op
   });
 
   it('clears the future array on any new mutating action', () => {

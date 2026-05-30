@@ -177,6 +177,7 @@ export function advanceHint(state: GameState): GameState {
 }
 
 export function dismissHint(state: GameState): GameState {
+  if (state.currentHint === null) return state;
   return { ...state, currentHint: null, hintLevel: 1 };
 }
 
