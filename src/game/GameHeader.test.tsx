@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { GameHeader } from './GameHeader';
 import * as persistence from './persistence';
 import { useGameStore } from './store';
@@ -18,6 +18,7 @@ describe('GameHeader', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.useRealTimers();
   });
 
   it('renders the puzzle difficulty label', () => {
@@ -45,5 +46,52 @@ describe('GameHeader', () => {
     render(<GameHeader />);
     fireEvent.click(screen.getByRole('button', { name: 'New Game' }));
     expect(useGameStore.getState().screen).toBe('game');
+  });
+
+  it('renders elapsed time as "0:00" when elapsedMs is 0', () => {
+    render(<GameHeader />);
+    expect(screen.getByText('0:00')).toBeInTheDocument();
+  });
+
+  it('renders elapsed time formatted from elapsedMs', () => {
+    useGameStore.setState({ elapsedMs: 227000 });
+    render(<GameHeader />);
+    expect(screen.getByText('3:47')).toBeInTheDocument();
+  });
+
+  it('increments elapsedMs by 1000 per second while playing', () => {
+    vi.useFakeTimers();
+    useGameStore.setState({
+      ...initialEmptyState,
+      screen: 'game',
+      won: false,
+      puzzle: makePuzzle(),
+    });
+    render(<GameHeader />);
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    expect(useGameStore.getState().elapsedMs).toBe(3000);
+  });
+
+  it('stops timer permanently when won becomes true', () => {
+    vi.useFakeTimers();
+    useGameStore.setState({
+      ...initialEmptyState,
+      screen: 'game',
+      won: false,
+      puzzle: makePuzzle(),
+    });
+    render(<GameHeader />);
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+    act(() => {
+      useGameStore.setState({ won: true });
+    });
+    act(() => {
+      vi.advanceTimersByTime(3000);
+    });
+    expect(useGameStore.getState().elapsedMs).toBe(2000);
   });
 });

@@ -21,3 +21,9 @@
   font-size: 0.875rem;
   min-height: 44px;
 }
+
+.game-header__time {
+  color: var(--fg-muted);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
