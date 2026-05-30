@@ -67,6 +67,7 @@ export function deserialize(json: string): GameState | null {
     history: { past: [], future: [] },
     currentHint: null,
     hintLevel: 1,
+    screen: 'landing' as const,
   };
 }
 

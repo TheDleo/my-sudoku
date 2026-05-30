@@ -17,6 +17,7 @@ export type GameState = {
   history: { past: GameSnapshot[]; future: GameSnapshot[] };
   currentHint: Step | null;
   hintLevel: 1 | 2 | 3 | 4;
+  screen: 'landing' | 'game';
 };
 
 export type GameStore = GameState & {
@@ -33,4 +34,6 @@ export type GameStore = GameState & {
   dismissHint: () => void;
   undo: () => void;
   redo: () => void;
+  setScreen: (s: 'landing' | 'game') => void;
+  resumeGame: () => void;
 };

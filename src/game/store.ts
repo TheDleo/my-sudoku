@@ -23,6 +23,9 @@ export const useGameStore = create<GameStore>()((set) => ({
 
   undo: () => set(reducers.undo),
   redo: () => set(reducers.redo),
+
+  setScreen: (s) => set((st) => ({ ...st, screen: s })),
+  resumeGame: () => set((st) => ({ ...st, screen: 'game' })),
 }));
 
 // Auto-save subscriber. Only fires when persisted fields changed.
@@ -47,6 +50,7 @@ useGameStore.subscribe((state: GameStore, prev: GameStore) => {
     history: state.history,
     currentHint: null,
     hintLevel: 1,
+    screen: state.screen,
   };
   persistence.save(snapshot);
 });

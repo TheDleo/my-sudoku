@@ -22,6 +22,7 @@ export const initialEmptyState: GameState = {
   history: { past: [], future: [] },
   currentHint: null,
   hintLevel: 1,
+  screen: 'landing',
 };
 
 export function loadPuzzle(_state: GameState, puzzle: Puzzle): GameState {
@@ -40,6 +41,7 @@ export function loadPuzzle(_state: GameState, puzzle: Puzzle): GameState {
     history: { past: [], future: [] },
     currentHint: null,
     hintLevel: 1,
+    screen: 'game',
   };
 }
 
