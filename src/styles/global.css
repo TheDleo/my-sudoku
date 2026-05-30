@@ -50,3 +50,9 @@ h1 {
     transition-duration: 0.01ms !important;
   }
 }
+
+@media (max-width: 420px) {
+  main {
+    padding: 0.5rem;
+  }
+}

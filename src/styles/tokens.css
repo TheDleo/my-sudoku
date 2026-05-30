@@ -24,7 +24,7 @@ html[data-theme='dark'] {
   --fg: #e8e8e8;
   --fg-muted: #999;
   --surface: #18181b;
-  --border: #2a2a2e;
+  --border: #606065;
   --accent: #60a5fa;
   --accent-fg: #0f0f10;
   --cell-bg: #1c1c1f;
@@ -32,7 +32,7 @@ html[data-theme='dark'] {
   --cell-user: #60a5fa;
   --cell-selected: #1e3a5f;
   --cell-selected-pencil: #1a3a2a;
-  --cell-peer: #1f1f23;
+  --cell-peer: #252529;
   --cell-highlight: #3d3416;
   --cell-conflict: #4a1f1f;
   --cell-conflict-fg: #fca5a5;
@@ -46,7 +46,7 @@ html[data-theme='dark'] {
     --fg: #e8e8e8;
     --fg-muted: #999;
     --surface: #18181b;
-    --border: #2a2a2e;
+    --border: #606065;
     --accent: #60a5fa;
     --accent-fg: #0f0f10;
     --cell-bg: #1c1c1f;
@@ -54,7 +54,7 @@ html[data-theme='dark'] {
     --cell-user: #60a5fa;
     --cell-selected: #1e3a5f;
     --cell-selected-pencil: #1a3a2a;
-    --cell-peer: #1f1f23;
+    --cell-peer: #252529;
     --cell-highlight: #3d3416;
     --cell-conflict: #4a1f1f;
     --cell-conflict-fg: #fca5a5;
