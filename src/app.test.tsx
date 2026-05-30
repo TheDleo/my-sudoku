@@ -6,7 +6,7 @@ import { App } from './app';
 import * as persistence from './game/persistence';
 
 vi.mock('./generator/client', () => ({
-  workerClient: { getPuzzle: vi.fn() },
+  workerClient: { getPuzzle: vi.fn().mockResolvedValue(undefined) },
 }));
 
 vi.mock('./game/persistence', () => ({
