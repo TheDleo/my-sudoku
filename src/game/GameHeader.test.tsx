@@ -34,6 +34,9 @@ describe('GameHeader', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     render(<GameHeader />);
     fireEvent.click(screen.getByRole('button', { name: 'New Game' }));
+    expect(window.confirm).toHaveBeenCalledWith(
+      'Start a new game? Your current progress will be lost.',
+    );
     expect(useGameStore.getState().screen).toBe('landing');
   });
 
