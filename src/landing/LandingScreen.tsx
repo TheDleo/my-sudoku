@@ -21,9 +21,13 @@ export function LandingScreen() {
 
   const handleDifficulty = async (d: Difficulty) => {
     setGenerating(d);
-    const puzzle = await workerClient.getPuzzle(d);
-    useGameStore.getState().loadPuzzle(puzzle);
-    useGameStore.getState().setScreen('game');
+    try {
+      const puzzle = await workerClient.getPuzzle(d);
+      useGameStore.getState().loadPuzzle(puzzle);
+      useGameStore.getState().setScreen('game');
+    } finally {
+      setGenerating(null);
+    }
   };
 
   const handleResume = () => {
