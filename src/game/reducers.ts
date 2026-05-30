@@ -70,6 +70,7 @@ export function placeDigit(state: GameState, digit: Digit): GameState {
   return {
     ...state,
     cells: nextCells,
+    selection: { ...state.selection, number: digit },
     mistakes: conflicted ? state.mistakes + 1 : state.mistakes,
     currentHint: null,
     hintLevel: 1,

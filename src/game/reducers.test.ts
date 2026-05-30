@@ -206,6 +206,13 @@ describe('placeDigit', () => {
     expect(s5.mistakes).toBe(1); // mistakes NOT restored by undo
     expect(s5.cells[1]![3]!.value).toBeNull(); // cell IS restored
   });
+
+  it('sets selection.number to the placed digit', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const selected = selectCell(loaded, { row: 1, col: 1 });
+    const next = placeDigit(selected, 3 as Digit);
+    expect(next.selection.number).toBe(3);
+  });
 });
 
 describe('eraseCell', () => {
