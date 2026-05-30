@@ -685,7 +685,7 @@ describe('dismissWin', () => {
     expect(dismissWin(state).won).toBe(false);
   });
 
-  it('returns same reference when already false', () => {
+  it('returns a new object when already false', () => {
     expect(dismissWin(initialEmptyState)).not.toBe(initialEmptyState);
     expect(dismissWin(initialEmptyState).won).toBe(false);
   });
