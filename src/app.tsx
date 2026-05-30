@@ -1,5 +1,6 @@
 import { Board } from './game/Board';
 import { ActionBar } from './game/ActionBar';
+import { HintPanel } from './hints/HintPanel';
 import { NumberPad } from './game/NumberPad';
 import { useGameStore } from './game/store';
 
@@ -15,6 +16,7 @@ export function App() {
       <h1>Sudoku</h1>
       <Board />
       <ActionBar />
+      <HintPanel />
       <NumberPad />
     </main>
   );
