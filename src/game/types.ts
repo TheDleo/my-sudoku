@@ -18,6 +18,7 @@ export type GameState = {
   currentHint: Step | null;
   hintLevel: 1 | 2 | 3 | 4;
   screen: 'landing' | 'game';
+  won: boolean;
 };
 
 export type GameStore = GameState & {
@@ -36,4 +37,5 @@ export type GameStore = GameState & {
   redo: () => void;
   setScreen: (s: 'landing' | 'game') => void;
   resumeGame: () => void;
+  dismissWin: () => void;
 };

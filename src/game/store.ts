@@ -31,6 +31,7 @@ export const useGameStore = create<GameStore>()((set) => ({
       if (saved === null) return {};
       return { ...saved, screen: 'game' as const };
     }),
+  dismissWin: () => set((s) => reducers.dismissWin(s)),
 }));
 
 // Auto-save subscriber. Only fires when persisted fields changed.
@@ -56,6 +57,7 @@ useGameStore.subscribe((state: GameStore, prev: GameStore) => {
     currentHint: null,
     hintLevel: 1,
     screen: state.screen,
+    won: false,
   };
   persistence.save(snapshot);
 });

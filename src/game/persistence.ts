@@ -68,6 +68,7 @@ export function deserialize(json: string): GameState | null {
     currentHint: null,
     hintLevel: 1,
     screen: 'landing' as const,
+    won: false,
   };
 }
 

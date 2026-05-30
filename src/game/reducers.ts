@@ -23,6 +23,7 @@ export const initialEmptyState: GameState = {
   currentHint: null,
   hintLevel: 1,
   screen: 'landing',
+  won: false,
 };
 
 export function loadPuzzle(state: GameState, puzzle: Puzzle): GameState {
@@ -42,6 +43,7 @@ export function loadPuzzle(state: GameState, puzzle: Puzzle): GameState {
     currentHint: null,
     hintLevel: 1,
     screen: state.screen,
+    won: false,
   };
 }
 
@@ -186,6 +188,10 @@ export function dismissHint(state: GameState): GameState {
 
 export function setScreen(state: GameState, s: 'landing' | 'game'): GameState {
   return { ...state, screen: s };
+}
+
+export function dismissWin(state: GameState): GameState {
+  return { ...state, won: false };
 }
 
 // Re-export shared types for convenience.
