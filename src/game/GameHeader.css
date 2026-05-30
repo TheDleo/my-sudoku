@@ -1,0 +1,23 @@
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(100%, 500px);
+  margin-bottom: 8px;
+}
+
+.game-header__difficulty {
+  color: var(--fg-muted);
+  font-size: 0.875rem;
+}
+
+.game-header__new-game {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 0.875rem;
+  min-height: 44px;
+}
