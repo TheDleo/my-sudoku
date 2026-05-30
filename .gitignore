@@ -10,3 +10,4 @@ playwright-report/
 test-results/
 .husky/_
 *.tsbuildinfo
+.playwright-mcp/
