@@ -11,3 +11,4 @@ test-results/
 .husky/_
 *.tsbuildinfo
 .playwright-mcp/
+.superpowers/
