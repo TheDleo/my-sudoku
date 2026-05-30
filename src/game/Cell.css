@@ -64,6 +64,7 @@
 }
 
 .cell__pencil-mark--highlighted {
-  background: #4ade80;
+  background: var(--cell-pencil-highlight);
   border-radius: 50%;
+  aspect-ratio: 1;
 }
