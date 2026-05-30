@@ -1,0 +1,116 @@
+/* src/settings/SettingsModal.css */
+.settings-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-modal__card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 280px;
+  max-width: 360px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  outline: none;
+}
+
+.settings-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.settings-modal__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.settings-modal__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: var(--fg-muted);
+  padding: 4px 8px;
+  line-height: 1;
+  border-radius: 4px;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.settings-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-modal__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  color: var(--fg);
+  font-size: 0.9375rem;
+}
+
+.settings-modal__row:last-of-type {
+  border-bottom: none;
+}
+
+.settings-modal__toggle {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+.settings-modal__section {
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-modal__section-label {
+  color: var(--fg-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.settings-modal__theme-group {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-modal__theme-btn {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 0.875rem;
+  min-height: 44px;
+}
+
+.settings-modal__theme-btn--active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
