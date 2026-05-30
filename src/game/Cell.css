@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(0.875rem, 3vw, 1.5rem);
+  font-size: clamp(1.125rem, 4vw, 1.5rem);
   position: relative;
   user-select: none;
 }
