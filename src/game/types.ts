@@ -38,4 +38,5 @@ export type GameStore = GameState & {
   setScreen: (s: 'landing' | 'game') => void;
   resumeGame: () => void;
   dismissWin: () => void;
+  tickTimer: () => void;
 };

@@ -205,5 +205,9 @@ export function dismissWin(state: GameState): GameState {
   return { ...state, won: false };
 }
 
+export function tickTimer(state: GameState): GameState {
+  return { ...state, elapsedMs: state.elapsedMs + 1000 };
+}
+
 // Re-export shared types for convenience.
 export type { GameSnapshot, GameState };

@@ -15,6 +15,7 @@ import {
   selectCell,
   setScreen,
   setSelectedNumber,
+  tickTimer,
   togglePencilMark,
   togglePencilMode,
   undo,
@@ -688,5 +689,19 @@ describe('dismissWin', () => {
   it('returns a new object when already false', () => {
     expect(dismissWin(initialEmptyState)).not.toBe(initialEmptyState);
     expect(dismissWin(initialEmptyState).won).toBe(false);
+  });
+});
+
+describe('tickTimer', () => {
+  it('increments elapsedMs by 1000', () => {
+    const state = { ...initialEmptyState, elapsedMs: 5000 };
+    expect(tickTimer(state).elapsedMs).toBe(6000);
+  });
+
+  it('does not mutate other state fields', () => {
+    const state = { ...initialEmptyState, elapsedMs: 0, mistakes: 3 };
+    const next = tickTimer(state);
+    expect(next.mistakes).toBe(3);
+    expect(next.cells).toBe(state.cells);
   });
 });

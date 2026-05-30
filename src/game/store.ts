@@ -32,6 +32,7 @@ export const useGameStore = create<GameStore>()((set) => ({
       return { ...saved, screen: 'game' as const };
     }),
   dismissWin: () => set((s) => reducers.dismissWin(s)),
+  tickTimer: () => set((s) => reducers.tickTimer(s)),
 }));
 
 // Auto-save subscriber. Only fires when persisted fields changed.
