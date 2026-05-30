@@ -25,7 +25,12 @@ export const useGameStore = create<GameStore>()((set) => ({
   redo: () => set(reducers.redo),
 
   setScreen: (s) => set((st) => ({ ...st, screen: s })),
-  resumeGame: () => set((st) => ({ ...st, screen: 'game' })),
+  resumeGame: () =>
+    set(() => {
+      const saved = persistence.load();
+      if (saved === null) return {};
+      return { ...saved, screen: 'game' as const };
+    }),
 }));
 
 // Auto-save subscriber. Only fires when persisted fields changed.

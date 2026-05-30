@@ -25,7 +25,7 @@ export const initialEmptyState: GameState = {
   screen: 'landing',
 };
 
-export function loadPuzzle(_state: GameState, puzzle: Puzzle): GameState {
+export function loadPuzzle(state: GameState, puzzle: Puzzle): GameState {
   const cells: Cell[][] = puzzle.initialBoard.map((row) =>
     row.map((v) => ({ value: v, pencilMarks: new Set<Digit>() })),
   );
@@ -41,7 +41,7 @@ export function loadPuzzle(_state: GameState, puzzle: Puzzle): GameState {
     history: { past: [], future: [] },
     currentHint: null,
     hintLevel: 1,
-    screen: 'game',
+    screen: state.screen,
   };
 }
 
