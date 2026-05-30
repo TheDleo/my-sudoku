@@ -1,8 +1,10 @@
+// src/game/store.ts
 import { create } from 'zustand';
 import * as persistence from './persistence';
 import * as reducers from './reducers';
 import { initialEmptyState, withSnapshot } from './reducers';
 import type { GameState, GameStore } from './types';
+import { useSettingsStore } from '../settings/store';
 
 export const useGameStore = create<GameStore>()((set) => ({
   ...initialEmptyState,
@@ -11,8 +13,16 @@ export const useGameStore = create<GameStore>()((set) => ({
   selectCell: (coord) => set((s) => reducers.selectCell(s, coord)),
   setSelectedNumber: (n) => set((s) => reducers.setSelectedNumber(s, n)),
 
-  placeDigit: (d) => set((s) => withSnapshot(s, (st) => reducers.placeDigit(st, d))),
-  eraseCell: () => set((s) => withSnapshot(s, reducers.eraseCell)),
+  placeDigit: (d) =>
+    set((s) => {
+      const next = withSnapshot(s, (st) => reducers.placeDigit(st, d));
+      return useSettingsStore.getState().autoCandidates ? reducers.fillCandidates(next) : next;
+    }),
+  eraseCell: () =>
+    set((s) => {
+      const next = withSnapshot(s, reducers.eraseCell);
+      return useSettingsStore.getState().autoCandidates ? reducers.fillCandidates(next) : next;
+    }),
   togglePencilMark: (d) => set((s) => withSnapshot(s, (st) => reducers.togglePencilMark(st, d))),
   togglePencilMode: () => set((s) => withSnapshot(s, reducers.togglePencilMode)),
   fillCandidates: () => set((s) => withSnapshot(s, reducers.fillCandidates)),
@@ -21,8 +31,16 @@ export const useGameStore = create<GameStore>()((set) => ({
   advanceHint: () => set((s) => reducers.advanceHint(s)),
   dismissHint: () => set((s) => reducers.dismissHint(s)),
 
-  undo: () => set(reducers.undo),
-  redo: () => set(reducers.redo),
+  undo: () =>
+    set((s) => {
+      const next = reducers.undo(s);
+      return useSettingsStore.getState().autoCandidates ? reducers.fillCandidates(next) : next;
+    }),
+  redo: () =>
+    set((s) => {
+      const next = reducers.redo(s);
+      return useSettingsStore.getState().autoCandidates ? reducers.fillCandidates(next) : next;
+    }),
 
   setScreen: (s) => set((st) => reducers.setScreen(st, s)),
   resumeGame: () =>
@@ -61,4 +79,11 @@ useGameStore.subscribe((state: GameStore, prev: GameStore) => {
     won: false,
   };
   persistence.save(snapshot);
+});
+
+// When autoCandidates is toggled ON, immediately fill candidates.
+useSettingsStore.subscribe((state, prev) => {
+  if (state.autoCandidates && !prev.autoCandidates) {
+    useGameStore.getState().fillCandidates();
+  }
 });
