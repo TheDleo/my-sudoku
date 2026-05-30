@@ -73,4 +73,11 @@ describe('HintPanel', () => {
     fireEvent.click(getByRole('button', { name: /dismiss hint/i }));
     expect(useGameStore.getState().currentHint).toBeNull();
   });
+
+  it('shows technique name at level 3 (cells highlighted but no explanation yet)', () => {
+    useGameStore.setState({ ...initialEmptyState, currentHint: mockStep, hintLevel: 3 });
+    const { getByText, queryByText } = render(<HintPanel />);
+    expect(getByText('Naked Single')).toBeTruthy();
+    expect(queryByText(mockStep.explanation)).toBeNull();
+  });
 });

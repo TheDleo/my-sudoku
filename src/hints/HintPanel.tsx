@@ -12,7 +12,7 @@ export function HintPanel() {
 
   if (currentHint === null) {
     return (
-      <div className="hint-panel">
+      <div className="hint-panel" onClick={(e) => e.stopPropagation()}>
         <button className="hint-panel__request" onClick={handleRequestHint}>
           Hint
         </button>
@@ -21,7 +21,7 @@ export function HintPanel() {
   }
 
   return (
-    <div className="hint-panel hint-panel--active">
+    <div className="hint-panel hint-panel--active" onClick={(e) => e.stopPropagation()}>
       <button className="hint-panel__dismiss" onClick={handleDismissHint} aria-label="Dismiss hint">
         ×
       </button>
