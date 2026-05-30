@@ -33,6 +33,48 @@ describe('getHint', () => {
     }
     expect(getHint(cells)).toBeNull();
   });
+
+  it('uses cell pencil marks as candidates when present, not computed candidates', () => {
+    // Baseline: row 0 has 1-8 placed → (0,8) computed candidates = {9} → nakedSingle fires
+    const cells = empty9x9<Cell>(() => ({ value: null, pencilMarks: new Set<Digit>() }));
+    for (let c = 0; c < 8; c++) {
+      cells[0]![c]!.value = (c + 1) as Digit;
+    }
+    const hint1 = getHint(cells);
+    expect(hint1?.technique).toBe('nakedSingle');
+    expect(hint1?.placements[0]?.digit).toBe(9);
+
+    // Now: set pencil marks on (0,8) to {9} (user accepted the hint)
+    // Engine should use pencil marks {9}, same as computed, so it still finds the hint
+    const cellsWithMarks1 = empty9x9<Cell>(() => ({ value: null, pencilMarks: new Set<Digit>() }));
+    for (let c = 0; c < 8; c++) {
+      cellsWithMarks1[0]![c]!.value = (c + 1) as Digit;
+    }
+    cellsWithMarks1[0]![8]!.pencilMarks = new Set([9] as Digit[]);
+    expect(getHint(cellsWithMarks1)?.technique).toBe('nakedSingle');
+
+    // Now: user explicitly removes 9 from pencil marks (doesn't accept the hint), leaving {1,2,3,4,5,6,7,8}
+    // Engine uses pencil marks {1-8}, not computed {9}, so nakedSingle no longer fires
+    const cellsWithMarks2 = empty9x9<Cell>(() => ({ value: null, pencilMarks: new Set<Digit>() }));
+    for (let c = 0; c < 8; c++) {
+      cellsWithMarks2[0]![c]!.value = (c + 1) as Digit;
+    }
+    // Set pencil marks to all digits except 9
+    cellsWithMarks2[0]![8]!.pencilMarks = new Set([1, 2, 3, 4, 5, 6, 7, 8] as Digit[]);
+    // Set all other empty cells to empty pencil marks (will use computed candidates)
+    // This ensures no other hints fire
+    for (let r = 1; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        cellsWithMarks2[r]![c]!.pencilMarks = new Set();
+      }
+    }
+    const hint2 = getHint(cellsWithMarks2);
+    // Should not be nakedSingle on (0,8) since pencil marks don't have {9}
+    if (hint2?.technique === 'nakedSingle') {
+      // If it's a nakedSingle, it should not be for (0,8)
+      expect(hint2.placements[0]?.cell).not.toEqual({ row: 0, col: 8 });
+    }
+  });
 });
 
 describe('TECHNIQUE_LABELS', () => {

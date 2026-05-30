@@ -24,7 +24,13 @@ export const TECHNIQUE_LABELS: Record<TechniqueName, string> = {
 
 export function getHint(cells: Cell[][]): Step | null {
   const values = cells.map((row) => row.map((c) => c.value));
-  const candidates = computeCandidates(values);
+  const computedCandidates = computeCandidates(values);
+  const candidates = cells.map((row, r) =>
+    row.map((cell, c) => {
+      if (cell.value !== null) return computedCandidates[r]![c]!;
+      return cell.pencilMarks.size > 0 ? cell.pencilMarks : computedCandidates[r]![c]!;
+    }),
+  );
   for (const detector of ALL_TECHNIQUES) {
     const step = detector({ values, candidates });
     if (step !== null) return step;
