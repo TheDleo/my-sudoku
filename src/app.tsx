@@ -6,10 +6,13 @@ import { NumberPad } from './game/NumberPad';
 import { LandingScreen } from './landing/LandingScreen';
 import { WinModal } from './game/WinModal';
 import { useGameStore } from './game/store';
+import { useThemeSync } from './settings/theme';
 
 export function App() {
   const screen = useGameStore((s) => s.screen);
   const won = useGameStore((s) => s.won);
+
+  useThemeSync();
 
   const handleMainClick = () => {
     const store = useGameStore.getState();
