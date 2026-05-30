@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { Cell, Digit } from '../types';
-import { cloneCells, computeCandidates, empty9x9, getRemainingCounts } from './helpers';
+import { cloneCells, computeCandidates, empty9x9, formatTime, getRemainingCounts } from './helpers';
 
 describe('empty9x9', () => {
   it('returns a 9x9 grid of the value when given a non-function', () => {
@@ -116,5 +116,27 @@ describe('computeCandidates', () => {
     const result = computeCandidates(cells);
     expect(result[0]![0]!.value).toBe(5);
     expect(result[0]![0]!.pencilMarks.size).toBe(0);
+  });
+});
+
+describe('formatTime', () => {
+  it('formats 0ms as "0:00"', () => {
+    expect(formatTime(0)).toBe('0:00');
+  });
+
+  it('formats 59000ms as "0:59"', () => {
+    expect(formatTime(59000)).toBe('0:59');
+  });
+
+  it('formats 60000ms as "1:00"', () => {
+    expect(formatTime(60000)).toBe('1:00');
+  });
+
+  it('formats 227000ms as "3:47"', () => {
+    expect(formatTime(227000)).toBe('3:47');
+  });
+
+  it('formats 3661000ms as "61:01" (no hour cap)', () => {
+    expect(formatTime(3661000)).toBe('61:01');
   });
 });
