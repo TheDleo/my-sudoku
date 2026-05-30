@@ -18,12 +18,13 @@ export function getHighlights(
     GameState,
     'cells' | 'given' | 'selection' | 'pencilMode' | 'currentHint' | 'hintLevel'
   >,
+  possiblePlacements = true,
 ): HighlightMap {
   const map: HighlightMap = Array.from({ length: 9 }, () =>
     Array.from({ length: 9 }, (): CellHighlight => null),
   );
 
-  if (state.selection.number !== null) {
+  if (possiblePlacements && state.selection.number !== null) {
     const values = state.cells.map((row) => row.map((c) => c.value));
     const candidates = computeCandidates(values);
     for (let r = 0; r < 9; r++) {

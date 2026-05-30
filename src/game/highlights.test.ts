@@ -343,3 +343,36 @@ describe('hint tier', () => {
     expect(map[0]![8]).toBe('hint');
   });
 });
+
+describe('possiblePlacements parameter', () => {
+  it('produces no "possible" highlights when possiblePlacements is false', () => {
+    const state = {
+      ...initialEmptyState,
+      selection: { cell: null, number: 5 as Digit },
+    };
+    const map = getHighlights(state, false);
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        expect(map[r]![c]).not.toBe('possible');
+      }
+    }
+  });
+
+  it('produces "possible" highlights when possiblePlacements is true (explicit)', () => {
+    const state = {
+      ...initialEmptyState,
+      selection: { cell: null, number: 5 as Digit },
+    };
+    const map = getHighlights(state, true);
+    expect(map[0]![0]).toBe('possible');
+  });
+
+  it('defaults to showing possible highlights when parameter is omitted', () => {
+    const state = {
+      ...initialEmptyState,
+      selection: { cell: null, number: 5 as Digit },
+    };
+    const map = getHighlights(state);
+    expect(map[0]![0]).toBe('possible');
+  });
+});

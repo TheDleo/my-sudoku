@@ -1,6 +1,7 @@
 import './Board.css';
 import { useEffect, useRef } from 'react';
 import { useGameStore } from './store';
+import { useSettingsStore } from '../settings/store';
 import { getHighlights } from './highlights';
 import { handleKey } from './keyboard';
 import { Cell } from './Cell';
@@ -12,9 +13,13 @@ export function Board() {
   const pencilMode = useGameStore((s) => s.pencilMode);
   const currentHint = useGameStore((s) => s.currentHint);
   const hintLevel = useGameStore((s) => s.hintLevel);
+  const possiblePlacements = useSettingsStore((s) => s.possiblePlacements);
   const boardRef = useRef<HTMLDivElement>(null);
 
-  const highlights = getHighlights({ cells, given, selection, pencilMode, currentHint, hintLevel });
+  const highlights = getHighlights(
+    { cells, given, selection, pencilMode, currentHint, hintLevel },
+    possiblePlacements,
+  );
 
   useEffect(() => {
     const el = boardRef.current;
