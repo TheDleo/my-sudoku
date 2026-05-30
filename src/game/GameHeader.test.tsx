@@ -3,6 +3,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import { GameHeader } from './GameHeader';
 import * as persistence from './persistence';
 import { useGameStore } from './store';
+import { useSettingsStore } from '../settings/store';
 import { initialEmptyState } from './reducers';
 import { makePuzzle } from './testHelpers';
 
@@ -13,6 +14,13 @@ describe('GameHeader', () => {
       ...initialEmptyState,
       screen: 'game',
       puzzle: makePuzzle(),
+    });
+    useSettingsStore.setState({
+      autoCandidates: false,
+      possiblePlacements: true,
+      showTimer: true,
+      showMistakes: true,
+      theme: 'auto',
     });
   });
 
@@ -93,5 +101,37 @@ describe('GameHeader', () => {
       vi.advanceTimersByTime(3000);
     });
     expect(useGameStore.getState().elapsedMs).toBe(2000);
+  });
+
+  it('renders the timer when showTimer is true', () => {
+    useSettingsStore.setState({ showTimer: true });
+    render(<GameHeader />);
+    expect(screen.getByText('0:00')).toBeInTheDocument();
+  });
+
+  it('hides the timer when showTimer is false', () => {
+    useSettingsStore.setState({ showTimer: false });
+    render(<GameHeader />);
+    expect(screen.queryByText('0:00')).not.toBeInTheDocument();
+  });
+
+  it('renders the mistakes counter when showMistakes is true', () => {
+    useSettingsStore.setState({ showMistakes: true });
+    useGameStore.setState({ mistakes: 3 });
+    render(<GameHeader />);
+    expect(screen.getByText('✕3')).toBeInTheDocument();
+  });
+
+  it('hides the mistakes counter when showMistakes is false', () => {
+    useSettingsStore.setState({ showMistakes: false });
+    useGameStore.setState({ mistakes: 3 });
+    render(<GameHeader />);
+    expect(screen.queryByText('✕3')).not.toBeInTheDocument();
+  });
+
+  it('shows ✕0 by default when showMistakes is true and mistakes is 0', () => {
+    useSettingsStore.setState({ showMistakes: true });
+    render(<GameHeader />);
+    expect(screen.getByText('✕0')).toBeInTheDocument();
   });
 });
