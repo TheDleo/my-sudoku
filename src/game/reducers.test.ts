@@ -704,4 +704,9 @@ describe('tickTimer', () => {
     expect(next.mistakes).toBe(3);
     expect(next.cells).toBe(state.cells);
   });
+
+  it('increments elapsedMs regardless of won state (caller is responsible for pausing)', () => {
+    const state = { ...initialEmptyState, won: true, elapsedMs: 2000 };
+    expect(tickTimer(state).elapsedMs).toBe(3000);
+  });
 });

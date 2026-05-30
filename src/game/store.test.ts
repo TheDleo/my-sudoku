@@ -60,4 +60,12 @@ describe('useGameStore', () => {
     useGameStore.getState().undo();
     expect(useGameStore.getState().cells[1]![1]!.value).toBe(null);
   });
+
+  it('tickTimer increments elapsedMs and triggers save', () => {
+    useGameStore.getState().loadPuzzle(makePuzzle());
+    saveSpy.mockClear();
+    useGameStore.getState().tickTimer();
+    expect(useGameStore.getState().elapsedMs).toBe(1000);
+    expect(saveSpy).toHaveBeenCalledOnce();
+  });
 });
