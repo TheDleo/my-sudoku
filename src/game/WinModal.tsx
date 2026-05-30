@@ -35,7 +35,7 @@ export function WinModal() {
           <button className="win-btn win-btn--new-game" onClick={handleNewGame}>
             New Game
           </button>
-          <button className="win-btn win-btn--close" onClick={handleClose}>
+          <button className="win-btn" onClick={handleClose}>
             Close
           </button>
         </div>
