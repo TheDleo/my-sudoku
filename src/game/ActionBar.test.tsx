@@ -1,13 +1,21 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import { initialEmptyState, loadPuzzle } from './reducers';
 import { useGameStore } from './store';
+import { useSettingsStore } from '../settings/store';
 import { ActionBar } from './ActionBar';
 import { makePuzzle } from './testHelpers';
 
 describe('ActionBar', () => {
   beforeEach(() => {
     useGameStore.setState({ ...initialEmptyState });
+    useSettingsStore.setState({
+      autoCandidates: false,
+      possiblePlacements: true,
+      showTimer: true,
+      showMistakes: true,
+      theme: 'auto',
+    });
   });
 
   it('renders a pencil toggle button', () => {
@@ -43,9 +51,15 @@ describe('ActionBar', () => {
     expect(parentClick).not.toHaveBeenCalled();
   });
 
-  it('renders a candidates button', () => {
+  it('renders a candidates button when autoCandidates is false', () => {
     const { getByRole } = render(<ActionBar />);
     expect(getByRole('button', { name: /candidates/i })).toBeTruthy();
+  });
+
+  it('hides the candidates button when autoCandidates is true', () => {
+    useSettingsStore.setState({ autoCandidates: true });
+    render(<ActionBar />);
+    expect(screen.queryByRole('button', { name: /candidates/i })).not.toBeInTheDocument();
   });
 
   it('clicking the candidates button fills candidates into empty cells', () => {
@@ -53,7 +67,6 @@ describe('ActionBar', () => {
     useGameStore.setState({ ...loaded });
     const { getByRole } = render(<ActionBar />);
     fireEvent.click(getByRole('button', { name: /candidates/i }));
-    // (1,1) is empty in makePuzzle; after fill it must have candidates
     expect(useGameStore.getState().cells[1]![1]!.pencilMarks.size).toBeGreaterThan(0);
   });
 
@@ -113,5 +126,26 @@ describe('ActionBar', () => {
     const { getByRole } = render(<ActionBar />);
     fireEvent.click(getByRole('button', { name: /^redo$/i }));
     expect(useGameStore.getState().history.future.length).toBe(0);
+  });
+
+  it('renders a gear/settings button', () => {
+    render(<ActionBar />);
+    expect(screen.getByRole('button', { name: /settings/i })).toBeInTheDocument();
+  });
+
+  it('clicking the gear button opens the settings modal', () => {
+    render(<ActionBar />);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /settings/i }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('closing the settings modal hides it', () => {
+    render(<ActionBar />);
+    fireEvent.click(screen.getByRole('button', { name: /settings/i }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    // Click the close button inside the modal
+    fireEvent.click(screen.getByRole('button', { name: /close/i }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
