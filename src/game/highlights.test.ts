@@ -3,6 +3,7 @@ import { initialEmptyState } from './reducers';
 import { getHighlights } from './highlights';
 import { cloneCells } from './helpers';
 import type { Digit } from '../types';
+import type { Step } from '../solver/types';
 
 describe('getHighlights', () => {
   describe('empty state', () => {
@@ -235,6 +236,71 @@ describe('selected-pencil', () => {
       ...initialEmptyState,
       selection: { cell: { row: 2, col: 3 }, number: null },
       pencilMode: false,
+    };
+    const map = getHighlights(state);
+    expect(map[2]![3]).toBe('selected');
+  });
+});
+
+describe('hint tier', () => {
+  const mockStep: Step = {
+    technique: 'nakedSingle',
+    highlights: [{ row: 2, col: 3 }],
+    placements: [],
+    eliminations: [],
+    explanation: 'test',
+  };
+
+  it('marks highlighted cells as "hint" when hintLevel is 3', () => {
+    const state = {
+      ...initialEmptyState,
+      currentHint: mockStep,
+      hintLevel: 3 as const,
+    };
+    const map = getHighlights(state);
+    expect(map[2]![3]).toBe('hint');
+  });
+
+  it('marks highlighted cells as "hint" when hintLevel is 4', () => {
+    const state = {
+      ...initialEmptyState,
+      currentHint: mockStep,
+      hintLevel: 4 as const,
+    };
+    const map = getHighlights(state);
+    expect(map[2]![3]).toBe('hint');
+  });
+
+  it('does NOT mark highlighted cells when hintLevel is less than 3', () => {
+    const state = {
+      ...initialEmptyState,
+      currentHint: mockStep,
+      hintLevel: 2 as const,
+    };
+    const map = getHighlights(state);
+    expect(map[2]![3]).toBeNull();
+  });
+
+  it('"conflict" beats "hint": a hint cell that also conflicts shows "conflict"', () => {
+    const cells = cloneCells(initialEmptyState.cells);
+    cells[2]![3]!.value = 5 as Digit;
+    cells[2]![5]!.value = 5 as Digit;
+    const state = {
+      ...initialEmptyState,
+      cells,
+      currentHint: mockStep,
+      hintLevel: 3 as const,
+    };
+    const map = getHighlights(state);
+    expect(map[2]![3]).toBe('conflict');
+  });
+
+  it('"selected" beats "hint": the selected hint cell shows "selected"', () => {
+    const state = {
+      ...initialEmptyState,
+      currentHint: mockStep,
+      hintLevel: 3 as const,
+      selection: { cell: { row: 2, col: 3 }, number: null },
     };
     const map = getHighlights(state);
     expect(map[2]![3]).toBe('selected');

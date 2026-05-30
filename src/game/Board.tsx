@@ -10,9 +10,11 @@ export function Board() {
   const given = useGameStore((s) => s.given);
   const selection = useGameStore((s) => s.selection);
   const pencilMode = useGameStore((s) => s.pencilMode);
+  const currentHint = useGameStore((s) => s.currentHint);
+  const hintLevel = useGameStore((s) => s.hintLevel);
   const boardRef = useRef<HTMLDivElement>(null);
 
-  const highlights = getHighlights({ cells, given, selection, pencilMode });
+  const highlights = getHighlights({ cells, given, selection, pencilMode, currentHint, hintLevel });
 
   useEffect(() => {
     const el = boardRef.current;

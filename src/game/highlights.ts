@@ -7,13 +7,17 @@ export type CellHighlight =
   | 'selected'
   | 'selected-pencil'
   | 'conflict'
+  | 'hint'
   | 'peer'
   | 'possible'
   | null;
 export type HighlightMap = CellHighlight[][];
 
 export function getHighlights(
-  state: Pick<GameState, 'cells' | 'given' | 'selection' | 'pencilMode'>,
+  state: Pick<
+    GameState,
+    'cells' | 'given' | 'selection' | 'pencilMode' | 'currentHint' | 'hintLevel'
+  >,
 ): HighlightMap {
   const map: HighlightMap = Array.from({ length: 9 }, () =>
     Array.from({ length: 9 }, (): CellHighlight => null),
@@ -28,6 +32,12 @@ export function getHighlights(
           map[r]![c] = 'possible';
         }
       }
+    }
+  }
+
+  if (state.hintLevel >= 3 && state.currentHint !== null) {
+    for (const coord of state.currentHint.highlights) {
+      map[coord.row]![coord.col] = 'hint';
     }
   }
 

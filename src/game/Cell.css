@@ -29,6 +29,10 @@
   background: var(--cell-highlight);
 }
 
+.cell--hint {
+  background: var(--cell-hint);
+}
+
 .cell__digit {
   line-height: 1;
 }
