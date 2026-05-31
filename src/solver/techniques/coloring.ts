@@ -77,6 +77,7 @@ function scanDigit(state: SolverState, digit: Digit): Step | null {
       return {
         technique: 'coloring',
         highlights: comp,
+        colorGroups: { a: colorA, b: colorB },
         placements: [],
         eliminations,
         explanation: `Coloring: digit ${digit} has a chain where one color repeats inside a unit; that color is eliminated from ${losingCells.length} cells.`,
@@ -106,6 +107,7 @@ function scanDigit(state: SolverState, digit: Digit): Step | null {
       return {
         technique: 'coloring',
         highlights: comp,
+        colorGroups: { a: colorA, b: colorB },
         placements: [],
         eliminations,
         explanation: `Coloring: digit ${digit} forms a 2-colored chain; ${elimCells.length} outside cell(s) see both colors and cannot be ${digit}.`,

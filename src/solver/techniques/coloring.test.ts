@@ -50,6 +50,14 @@ describe('coloring (simple)', () => {
     expect(step?.technique).toBe('coloring');
     expect(step?.placements).toEqual([]);
     expect(step?.eliminations).toContainEqual({ cell: { row: 4, col: 0 }, digit: d });
+    expect(step?.colorGroups).toBeDefined();
+    expect(step?.colorGroups!.a.length).toBeGreaterThan(0);
+    expect(step?.colorGroups!.b.length).toBeGreaterThan(0);
+    const allGroupCells = [...step!.colorGroups!.a, ...step!.colorGroups!.b]
+      .map((c) => `${c.row},${c.col}`)
+      .sort();
+    const highlightCells = step!.highlights.map((c) => `${c.row},${c.col}`).sort();
+    expect(allGroupCells).toEqual(highlightCells);
   });
 
   it('color wrap: two same-colored cells share a unit → eliminate that color', () => {
@@ -72,6 +80,14 @@ describe('coloring (simple)', () => {
     expect(step?.eliminations).toContainEqual({ cell: { row: 4, col: 4 }, digit: d });
     expect(step?.eliminations).toContainEqual({ cell: { row: 4, col: 2 }, digit: d });
     expect(step?.eliminations.length).toBe(3);
+    expect(step?.colorGroups).toBeDefined();
+    expect(step?.colorGroups!.a.length).toBeGreaterThan(0);
+    expect(step?.colorGroups!.b.length).toBeGreaterThan(0);
+    const allGroupCells = [...step!.colorGroups!.a, ...step!.colorGroups!.b]
+      .map((c) => `${c.row},${c.col}`)
+      .sort();
+    const highlightCells = step!.highlights.map((c) => `${c.row},${c.col}`).sort();
+    expect(allGroupCells).toEqual(highlightCells);
   });
 
   it('does not fire when the chain is fully contained (no outside cells with d)', () => {

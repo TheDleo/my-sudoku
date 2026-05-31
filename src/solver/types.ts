@@ -43,6 +43,7 @@ export type Elimination = { cell: CellCoord; digit: Digit };
 export type Step = {
   technique: TechniqueName;
   highlights: CellCoord[];
+  colorGroups?: { a: CellCoord[]; b: CellCoord[] };
   placements: Placement[];
   eliminations: Elimination[];
   explanation: string;
