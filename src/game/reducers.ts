@@ -24,6 +24,8 @@ export const initialEmptyState: GameState = {
   hintLevel: 1,
   screen: 'landing',
   won: false,
+  colorMarks: empty9x9<'A' | 'B' | null>(null),
+  colorMode: null,
 };
 
 export function loadPuzzle(state: GameState, puzzle: Puzzle): GameState {
@@ -44,6 +46,8 @@ export function loadPuzzle(state: GameState, puzzle: Puzzle): GameState {
     hintLevel: 1,
     screen: state.screen,
     won: false,
+    colorMarks: empty9x9<'A' | 'B' | null>(null),
+    colorMode: null,
   };
 }
 
@@ -79,9 +83,12 @@ export function placeDigit(state: GameState, digit: Digit): GameState {
   }
   const conflicted = isConflictingPlacement(state.cells, sel, digit);
   const won = isSolved(nextCells, state.puzzle.solution);
+  const nextColorMarks = state.colorMarks.map((row) => [...row]);
+  nextColorMarks[sel.row]![sel.col] = null;
   return {
     ...state,
     cells: nextCells,
+    colorMarks: nextColorMarks,
     selection: { ...state.selection, number: digit },
     mistakes: conflicted ? state.mistakes + 1 : state.mistakes,
     currentHint: null,
@@ -128,6 +135,7 @@ export function withSnapshot(state: GameState, mutate: (s: GameState) => GameSta
   const snapshot: GameSnapshot = {
     cells: cloneCells(state.cells),
     pencilMode: state.pencilMode,
+    colorMarks: state.colorMarks.map((r) => [...r]),
   };
   const next = mutate(state);
   if (next === state) return state;
@@ -143,11 +151,13 @@ export function undo(state: GameState): GameState {
   const current: GameSnapshot = {
     cells: cloneCells(state.cells),
     pencilMode: state.pencilMode,
+    colorMarks: state.colorMarks.map((r) => [...r]),
   };
   return {
     ...state,
     cells: snapshot.cells,
     pencilMode: snapshot.pencilMode,
+    colorMarks: snapshot.colorMarks,
     currentHint: null,
     hintLevel: 1,
     history: {
@@ -163,11 +173,13 @@ export function redo(state: GameState): GameState {
   const current: GameSnapshot = {
     cells: cloneCells(state.cells),
     pencilMode: state.pencilMode,
+    colorMarks: state.colorMarks.map((r) => [...r]),
   };
   return {
     ...state,
     cells: snapshot.cells,
     pencilMode: snapshot.pencilMode,
+    colorMarks: snapshot.colorMarks,
     currentHint: null,
     hintLevel: 1,
     history: {
@@ -175,6 +187,20 @@ export function redo(state: GameState): GameState {
       future: state.history.future.slice(0, -1),
     },
   };
+}
+
+export function setColorMark(
+  state: GameState,
+  coord: CellCoord,
+  color: 'A' | 'B' | null,
+): GameState {
+  const next = state.colorMarks.map((row) => [...row]);
+  next[coord.row]![coord.col] = color;
+  return { ...state, colorMarks: next };
+}
+
+export function toggleColorMode(state: GameState, color: 'A' | 'B'): GameState {
+  return { ...state, colorMode: state.colorMode === color ? null : color };
 }
 
 export function fillCandidates(state: GameState): GameState {

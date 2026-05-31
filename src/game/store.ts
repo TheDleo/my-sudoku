@@ -51,6 +51,10 @@ export const useGameStore = create<GameStore>()((set) => ({
     }),
   dismissWin: () => set((s) => reducers.dismissWin(s)),
   tickTimer: () => set((s) => reducers.tickTimer(s)),
+
+  setColorMark: (coord, color) =>
+    set((s) => withSnapshot(s, (st) => reducers.setColorMark(st, coord, color))),
+  toggleColorMode: (color) => set((s) => reducers.toggleColorMode(s, color)),
 }));
 
 // Auto-save subscriber. Only fires when persisted fields changed.
@@ -60,7 +64,8 @@ useGameStore.subscribe((state: GameStore, prev: GameStore) => {
     state.pencilMode === prev.pencilMode &&
     state.mistakes === prev.mistakes &&
     state.elapsedMs === prev.elapsedMs &&
-    state.puzzle === prev.puzzle
+    state.puzzle === prev.puzzle &&
+    state.colorMarks === prev.colorMarks
   ) {
     return;
   }
@@ -77,6 +82,8 @@ useGameStore.subscribe((state: GameStore, prev: GameStore) => {
     hintLevel: 1,
     screen: state.screen,
     won: false,
+    colorMarks: state.colorMarks,
+    colorMode: null,
   };
   persistence.save(snapshot);
 });

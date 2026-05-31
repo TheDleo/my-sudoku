@@ -1,5 +1,6 @@
 import type { Cell, Digit, Puzzle } from '../types';
 import type { GameState } from './types';
+import { empty9x9 } from './helpers';
 
 export const STORAGE_KEY = 'my-sudoku.game';
 
@@ -11,6 +12,7 @@ type SerializedState = {
   pencilMode: boolean;
   mistakes: number;
   elapsedMs: number;
+  colorMarks?: ('A' | 'B' | null)[][];
 };
 
 export function serialize(state: GameState): string {
@@ -27,6 +29,7 @@ export function serialize(state: GameState): string {
     pencilMode: state.pencilMode,
     mistakes: state.mistakes,
     elapsedMs: state.elapsedMs,
+    colorMarks: state.colorMarks,
   };
   return JSON.stringify(payload);
 }
@@ -69,6 +72,8 @@ export function deserialize(json: string): GameState | null {
     hintLevel: 1,
     screen: 'landing' as const,
     won: false,
+    colorMarks: parsed.colorMarks ?? empty9x9<'A' | 'B' | null>(null),
+    colorMode: null,
   };
 }
 

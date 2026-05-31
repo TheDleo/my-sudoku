@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { Digit } from '../types';
-import { initialEmptyState, loadPuzzle, togglePencilMark, selectCell } from './reducers';
+import {
+  initialEmptyState,
+  loadPuzzle,
+  setColorMark,
+  togglePencilMark,
+  selectCell,
+} from './reducers';
 import { deserialize, load, save, serialize, STORAGE_KEY } from './persistence';
 import { makePuzzle } from './testHelpers';
 
@@ -30,7 +36,7 @@ describe('serialize / deserialize round-trip', () => {
     const dirty = {
       ...selected,
       history: {
-        past: [{ cells: selected.cells, pencilMode: false }],
+        past: [{ cells: selected.cells, pencilMode: false, colorMarks: selected.colorMarks }],
         future: [],
       },
     };
@@ -125,5 +131,32 @@ describe('load / save', () => {
     });
     const loaded = loadPuzzle(initialEmptyState, makePuzzle());
     expect(() => save(loaded)).not.toThrow();
+  });
+});
+
+describe('colorMarks persistence', () => {
+  it('round-trips colorMarks through serialize → deserialize', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const withMarks = setColorMark(
+      setColorMark(loaded, { row: 1, col: 2 }, 'A'),
+      { row: 7, col: 8 },
+      'B',
+    );
+    const restored = deserialize(serialize(withMarks));
+    expect(restored).not.toBeNull();
+    expect(restored!.colorMarks[1]![2]).toBe('A');
+    expect(restored!.colorMarks[7]![8]).toBe('B');
+    expect(restored!.colorMarks[0]![0]).toBeNull();
+  });
+
+  it('defaults to all-null grid when colorMarks is absent in saved data', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const json = serialize(loaded);
+    const parsed = JSON.parse(json) as Record<string, unknown>;
+    delete parsed.colorMarks;
+    const restored = deserialize(JSON.stringify(parsed));
+    expect(restored).not.toBeNull();
+    for (let r = 0; r < 9; r++)
+      for (let c = 0; c < 9; c++) expect(restored!.colorMarks[r]![c]).toBeNull();
   });
 });

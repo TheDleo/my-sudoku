@@ -4,6 +4,7 @@ import type { Step } from '../solver/types';
 export type GameSnapshot = {
   cells: Cell[][];
   pencilMode: boolean;
+  colorMarks: ('A' | 'B' | null)[][];
 };
 
 export type GameState = {
@@ -19,6 +20,8 @@ export type GameState = {
   hintLevel: 1 | 2 | 3 | 4;
   screen: 'landing' | 'game';
   won: boolean;
+  colorMarks: ('A' | 'B' | null)[][];
+  colorMode: 'A' | 'B' | null;
 };
 
 export type GameStore = GameState & {
@@ -39,4 +42,6 @@ export type GameStore = GameState & {
   resumeGame: () => void;
   dismissWin: () => void;
   tickTimer: () => void;
+  setColorMark: (coord: CellCoord, color: 'A' | 'B' | null) => void;
+  toggleColorMode: (color: 'A' | 'B') => void;
 };

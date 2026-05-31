@@ -88,7 +88,16 @@ describe('ActionBar', () => {
   it('undo button is enabled when history.past has entries', () => {
     useGameStore.setState({
       ...initialEmptyState,
-      history: { past: [{ cells: initialEmptyState.cells, pencilMode: false }], future: [] },
+      history: {
+        past: [
+          {
+            cells: initialEmptyState.cells,
+            pencilMode: false,
+            colorMarks: initialEmptyState.colorMarks,
+          },
+        ],
+        future: [],
+      },
     });
     const { getByRole } = render(<ActionBar />);
     expect((getByRole('button', { name: /^undo$/i }) as HTMLButtonElement).disabled).toBe(false);
@@ -102,7 +111,16 @@ describe('ActionBar', () => {
   it('redo button is enabled when history.future has entries', () => {
     useGameStore.setState({
       ...initialEmptyState,
-      history: { past: [], future: [{ cells: initialEmptyState.cells, pencilMode: false }] },
+      history: {
+        past: [],
+        future: [
+          {
+            cells: initialEmptyState.cells,
+            pencilMode: false,
+            colorMarks: initialEmptyState.colorMarks,
+          },
+        ],
+      },
     });
     const { getByRole } = render(<ActionBar />);
     expect((getByRole('button', { name: /^redo$/i }) as HTMLButtonElement).disabled).toBe(false);
@@ -111,7 +129,16 @@ describe('ActionBar', () => {
   it('clicking undo removes the last entry from history.past', () => {
     useGameStore.setState({
       ...initialEmptyState,
-      history: { past: [{ cells: initialEmptyState.cells, pencilMode: false }], future: [] },
+      history: {
+        past: [
+          {
+            cells: initialEmptyState.cells,
+            pencilMode: false,
+            colorMarks: initialEmptyState.colorMarks,
+          },
+        ],
+        future: [],
+      },
     });
     const { getByRole } = render(<ActionBar />);
     fireEvent.click(getByRole('button', { name: /^undo$/i }));
@@ -121,7 +148,16 @@ describe('ActionBar', () => {
   it('clicking redo removes the last entry from history.future', () => {
     useGameStore.setState({
       ...initialEmptyState,
-      history: { past: [], future: [{ cells: initialEmptyState.cells, pencilMode: false }] },
+      history: {
+        past: [],
+        future: [
+          {
+            cells: initialEmptyState.cells,
+            pencilMode: false,
+            colorMarks: initialEmptyState.colorMarks,
+          },
+        ],
+      },
     });
     const { getByRole } = render(<ActionBar />);
     fireEvent.click(getByRole('button', { name: /^redo$/i }));

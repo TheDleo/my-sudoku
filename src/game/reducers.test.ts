@@ -13,9 +13,11 @@ import {
   redo,
   requestHint,
   selectCell,
+  setColorMark,
   setScreen,
   setSelectedNumber,
   tickTimer,
+  toggleColorMode,
   togglePencilMark,
   togglePencilMode,
   undo,
@@ -59,8 +61,20 @@ describe('loadPuzzle', () => {
       mistakes: 4,
       elapsedMs: 12345,
       history: {
-        past: [{ cells: initialEmptyState.cells, pencilMode: true }],
-        future: [{ cells: initialEmptyState.cells, pencilMode: false }],
+        past: [
+          {
+            cells: initialEmptyState.cells,
+            pencilMode: true,
+            colorMarks: initialEmptyState.colorMarks,
+          },
+        ],
+        future: [
+          {
+            cells: initialEmptyState.cells,
+            pencilMode: false,
+            colorMarks: initialEmptyState.colorMarks,
+          },
+        ],
       },
     };
     const next = loadPuzzle(dirty, puzzle);
@@ -324,7 +338,7 @@ describe('withSnapshot', () => {
       ...selected,
       history: {
         past: [],
-        future: [{ cells: selected.cells, pencilMode: false }],
+        future: [{ cells: selected.cells, pencilMode: false, colorMarks: selected.colorMarks }],
       },
     };
     const next = withSnapshot(seeded, (s) => placeDigit(s, 5 as Digit));
@@ -536,7 +550,16 @@ describe('undo/redo — hint auto-dismiss', () => {
       ...initialEmptyState,
       currentHint: mockStep,
       hintLevel: 2 as const,
-      history: { past: [{ cells: initialEmptyState.cells, pencilMode: false }], future: [] },
+      history: {
+        past: [
+          {
+            cells: initialEmptyState.cells,
+            pencilMode: false,
+            colorMarks: initialEmptyState.colorMarks,
+          },
+        ],
+        future: [],
+      },
     };
     const next = undo(state);
     expect(next.currentHint).toBeNull();
@@ -548,7 +571,16 @@ describe('undo/redo — hint auto-dismiss', () => {
       ...initialEmptyState,
       currentHint: mockStep,
       hintLevel: 2 as const,
-      history: { past: [], future: [{ cells: initialEmptyState.cells, pencilMode: false }] },
+      history: {
+        past: [],
+        future: [
+          {
+            cells: initialEmptyState.cells,
+            pencilMode: false,
+            colorMarks: initialEmptyState.colorMarks,
+          },
+        ],
+      },
     };
     const next = redo(state);
     expect(next.currentHint).toBeNull();
@@ -708,5 +740,100 @@ describe('tickTimer', () => {
   it('increments elapsedMs regardless of won state (caller is responsible for pausing)', () => {
     const state = { ...initialEmptyState, won: true, elapsedMs: 2000 };
     expect(tickTimer(state).elapsedMs).toBe(3000);
+  });
+});
+
+describe('setColorMark', () => {
+  it('sets a mark on the specified cell', () => {
+    const next = setColorMark(initialEmptyState, { row: 2, col: 3 }, 'A');
+    expect(next.colorMarks[2]![3]).toBe('A');
+  });
+
+  it('does not mutate other cells', () => {
+    const next = setColorMark(initialEmptyState, { row: 2, col: 3 }, 'B');
+    expect(next.colorMarks[0]![0]).toBeNull();
+    expect(next.colorMarks[8]![8]).toBeNull();
+  });
+
+  it('clears a mark when passed null', () => {
+    const withMark = setColorMark(initialEmptyState, { row: 1, col: 1 }, 'A');
+    const cleared = setColorMark(withMark, { row: 1, col: 1 }, null);
+    expect(cleared.colorMarks[1]![1]).toBeNull();
+  });
+
+  it('overwrites an existing mark with a different color', () => {
+    const withA = setColorMark(initialEmptyState, { row: 0, col: 0 }, 'A');
+    const withB = setColorMark(withA, { row: 0, col: 0 }, 'B');
+    expect(withB.colorMarks[0]![0]).toBe('B');
+  });
+});
+
+describe('toggleColorMode', () => {
+  it('activates the given color when colorMode is null', () => {
+    const next = toggleColorMode(initialEmptyState, 'A');
+    expect(next.colorMode).toBe('A');
+  });
+
+  it('deactivates when the same color is toggled again', () => {
+    const active = { ...initialEmptyState, colorMode: 'A' as const };
+    expect(toggleColorMode(active, 'A').colorMode).toBeNull();
+  });
+
+  it('switches from A to B', () => {
+    const active = { ...initialEmptyState, colorMode: 'A' as const };
+    expect(toggleColorMode(active, 'B').colorMode).toBe('B');
+  });
+});
+
+describe('placeDigit — clears colorMark on placed cell', () => {
+  it('clears the color mark on the placed cell', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const withMark = setColorMark(loaded, { row: 1, col: 1 }, 'A');
+    const state = { ...withMark, selection: { cell: { row: 1, col: 1 }, number: null } };
+    const next = placeDigit(state, 3 as Digit);
+    expect(next.colorMarks[1]![1]).toBeNull();
+  });
+
+  it('does not clear color marks on other cells', () => {
+    const loaded = loadPuzzle(initialEmptyState, makePuzzle());
+    const withMarks = setColorMark(
+      setColorMark(loaded, { row: 1, col: 1 }, 'A'),
+      { row: 5, col: 5 },
+      'B',
+    );
+    const state = { ...withMarks, selection: { cell: { row: 1, col: 1 }, number: null } };
+    const next = placeDigit(state, 3 as Digit);
+    expect(next.colorMarks[5]![5]).toBe('B');
+  });
+});
+
+describe('undo/redo — colorMarks', () => {
+  it('undo restores colorMarks to pre-action state', () => {
+    const state = { ...initialEmptyState, selection: { cell: { row: 0, col: 0 }, number: null } };
+    const placed = withSnapshot(state, (s) => setColorMark(s, { row: 3, col: 3 }, 'A'));
+    expect(placed.colorMarks[3]![3]).toBe('A');
+    const reverted = undo(placed);
+    expect(reverted.colorMarks[3]![3]).toBeNull();
+  });
+
+  it('redo re-applies colorMarks', () => {
+    const state = { ...initialEmptyState, selection: { cell: { row: 0, col: 0 }, number: null } };
+    const placed = withSnapshot(state, (s) => setColorMark(s, { row: 3, col: 3 }, 'B'));
+    const reverted = undo(placed);
+    const redone = redo(reverted);
+    expect(redone.colorMarks[3]![3]).toBe('B');
+  });
+});
+
+describe('loadPuzzle — resets colorMarks and colorMode', () => {
+  it('resets colorMarks to all-null', () => {
+    const withMarks = setColorMark(initialEmptyState, { row: 4, col: 4 }, 'A');
+    const loaded = loadPuzzle(withMarks, makePuzzle());
+    expect(loaded.colorMarks[4]![4]).toBeNull();
+  });
+
+  it('resets colorMode to null', () => {
+    const active = { ...initialEmptyState, colorMode: 'B' as const };
+    expect(loadPuzzle(active, makePuzzle()).colorMode).toBeNull();
   });
 });
