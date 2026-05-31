@@ -1,0 +1,62 @@
+.technique-explainer__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.technique-explainer__card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 280px;
+  max-width: 360px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  outline: none;
+}
+
+.technique-explainer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.technique-explainer__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.technique-explainer__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: var(--fg-muted);
+  padding: 4px 8px;
+  line-height: 1;
+  border-radius: 4px;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.technique-explainer__diagram {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.technique-explainer__summary {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--fg);
+  line-height: 1.5;
+}
