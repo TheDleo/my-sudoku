@@ -51,6 +51,30 @@
   cursor: not-allowed;
 }
 
+.action-bar__color-a,
+.action-bar__color-b {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 0.875rem;
+  min-height: 44px;
+}
+
+.action-bar__color-a--active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+
+.action-bar__color-b--active {
+  background: var(--color-b);
+  color: #ffffff;
+  border-color: var(--color-b);
+}
+
 .action-bar__settings {
   padding: 8px 12px;
   border: 1px solid var(--border);

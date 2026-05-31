@@ -184,4 +184,44 @@ describe('ActionBar', () => {
     fireEvent.click(screen.getByRole('button', { name: /close/i }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
+
+  it('renders 🔵 A color button with aria-pressed="false" by default', () => {
+    render(<ActionBar />);
+    const btn = screen.getByRole('button', { name: /🔵 a/i });
+    expect(btn).toBeInTheDocument();
+    expect(btn.getAttribute('aria-pressed')).toBe('false');
+  });
+
+  it('renders 🟡 B color button with aria-pressed="false" by default', () => {
+    render(<ActionBar />);
+    const btn = screen.getByRole('button', { name: /🟡 b/i });
+    expect(btn).toBeInTheDocument();
+    expect(btn.getAttribute('aria-pressed')).toBe('false');
+  });
+
+  it('clicking 🔵 A sets colorMode to "A"', () => {
+    render(<ActionBar />);
+    fireEvent.click(screen.getByRole('button', { name: /🔵 a/i }));
+    expect(useGameStore.getState().colorMode).toBe('A');
+  });
+
+  it('clicking 🔵 A again deactivates colorMode', () => {
+    useGameStore.setState({ ...initialEmptyState, colorMode: 'A' });
+    render(<ActionBar />);
+    fireEvent.click(screen.getByRole('button', { name: /🔵 a/i }));
+    expect(useGameStore.getState().colorMode).toBeNull();
+  });
+
+  it('clicking 🟡 B while A is active switches colorMode to "B"', () => {
+    useGameStore.setState({ ...initialEmptyState, colorMode: 'A' });
+    render(<ActionBar />);
+    fireEvent.click(screen.getByRole('button', { name: /🟡 b/i }));
+    expect(useGameStore.getState().colorMode).toBe('B');
+  });
+
+  it('🔵 A button has aria-pressed="true" when colorMode is "A"', () => {
+    useGameStore.setState({ ...initialEmptyState, colorMode: 'A' });
+    render(<ActionBar />);
+    expect(screen.getByRole('button', { name: /🔵 a/i }).getAttribute('aria-pressed')).toBe('true');
+  });
 });

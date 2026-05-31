@@ -33,6 +33,22 @@
   background: var(--cell-hint);
 }
 
+.cell--hint-a {
+  background: var(--cell-hint-a);
+}
+
+.cell--hint-b {
+  background: var(--cell-hint-b);
+}
+
+.cell--color-a {
+  background: var(--cell-color-a);
+}
+
+.cell--color-b {
+  background: var(--cell-color-b);
+}
+
 .cell__digit {
   line-height: 1;
 }

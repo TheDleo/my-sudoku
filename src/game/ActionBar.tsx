@@ -9,6 +9,7 @@ export function ActionBar() {
   const pencilMode = useGameStore((s) => s.pencilMode);
   const canUndo = useGameStore((s) => s.history.past.length > 0);
   const canRedo = useGameStore((s) => s.history.future.length > 0);
+  const colorMode = useGameStore((s) => s.colorMode);
   const autoCandidates = useSettingsStore((s) => s.autoCandidates);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -47,6 +48,20 @@ export function ActionBar() {
       </button>
       <button className="action-bar__redo" onClick={handleRedo} disabled={!canRedo}>
         Redo
+      </button>
+      <button
+        className={`action-bar__color-a${colorMode === 'A' ? ' action-bar__color-a--active' : ''}`}
+        aria-pressed={colorMode === 'A'}
+        onClick={() => useGameStore.getState().toggleColorMode('A')}
+      >
+        🔵 A
+      </button>
+      <button
+        className={`action-bar__color-b${colorMode === 'B' ? ' action-bar__color-b--active' : ''}`}
+        aria-pressed={colorMode === 'B'}
+        onClick={() => useGameStore.getState().toggleColorMode('B')}
+      >
+        🟡 B
       </button>
       <button
         className="action-bar__settings"
