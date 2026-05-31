@@ -13,11 +13,12 @@ export function Board() {
   const pencilMode = useGameStore((s) => s.pencilMode);
   const currentHint = useGameStore((s) => s.currentHint);
   const hintLevel = useGameStore((s) => s.hintLevel);
+  const colorMarks = useGameStore((s) => s.colorMarks);
   const possiblePlacements = useSettingsStore((s) => s.possiblePlacements);
   const boardRef = useRef<HTMLDivElement>(null);
 
   const highlights = getHighlights(
-    { cells, given, selection, pencilMode, currentHint, hintLevel },
+    { cells, given, selection, pencilMode, currentHint, hintLevel, colorMarks },
     possiblePlacements,
   );
 
@@ -41,6 +42,11 @@ export function Board() {
     }
     const row = parseInt(target.dataset.row!, 10);
     const col = parseInt(target.dataset.col!, 10);
+    if (store.colorMode !== null) {
+      const current = store.colorMarks[row]![col];
+      store.setColorMark({ row, col }, current === store.colorMode ? null : store.colorMode);
+      return;
+    }
     if (store.selection.cell?.row === row && store.selection.cell?.col === col) {
       store.selectCell(null);
       store.setSelectedNumber(null);

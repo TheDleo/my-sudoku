@@ -344,6 +344,115 @@ describe('hint tier', () => {
   });
 });
 
+describe('color-a / color-b manual marks', () => {
+  it('marks a cell as "color-a" when colorMarks has A at that position', () => {
+    const colorMarks = initialEmptyState.colorMarks.map((r) => [...r]);
+    colorMarks[3]![4] = 'A';
+    const state = { ...initialEmptyState, colorMarks };
+    expect(getHighlights(state)[3]![4]).toBe('color-a');
+  });
+
+  it('marks a cell as "color-b" when colorMarks has B at that position', () => {
+    const colorMarks = initialEmptyState.colorMarks.map((r) => [...r]);
+    colorMarks[5]![6] = 'B';
+    const state = { ...initialEmptyState, colorMarks };
+    expect(getHighlights(state)[5]![6]).toBe('color-b');
+  });
+
+  it('leaves null cells unaffected', () => {
+    const colorMarks = initialEmptyState.colorMarks.map((r) => [...r]);
+    colorMarks[1]![1] = 'A';
+    const state = { ...initialEmptyState, colorMarks };
+    expect(getHighlights(state)[0]![0]).toBeNull();
+  });
+
+  it('"hint" overrides "color-a" on the same cell', () => {
+    const colorMarks = initialEmptyState.colorMarks.map((r) => [...r]);
+    colorMarks[2]![3] = 'A';
+    const step: Step = {
+      technique: 'nakedSingle',
+      highlights: [{ row: 2, col: 3 }],
+      placements: [],
+      eliminations: [],
+      explanation: 'test',
+    };
+    const state = { ...initialEmptyState, colorMarks, currentHint: step, hintLevel: 3 as const };
+    expect(getHighlights(state)[2]![3]).toBe('hint');
+  });
+
+  it('"conflict" overrides "color-b" on the same cell', () => {
+    const cells = cloneCells(initialEmptyState.cells);
+    cells[0]![0]!.value = 5 as Digit;
+    cells[0]![1]!.value = 5 as Digit;
+    const colorMarks = initialEmptyState.colorMarks.map((r) => [...r]);
+    colorMarks[0]![0] = 'B';
+    const state = { ...initialEmptyState, cells, colorMarks };
+    expect(getHighlights(state)[0]![0]).toBe('conflict');
+  });
+});
+
+describe('hint-a / hint-b tiers (coloring step)', () => {
+  const coloringStep: Step = {
+    technique: 'coloring',
+    highlights: [
+      { row: 0, col: 0 },
+      { row: 0, col: 4 },
+    ],
+    colorGroups: {
+      a: [{ row: 0, col: 0 }],
+      b: [{ row: 0, col: 4 }],
+    },
+    placements: [],
+    eliminations: [],
+    explanation: 'test',
+  };
+
+  it('renders hint-a and hint-b at hintLevel 3 for a Step with colorGroups', () => {
+    const state = { ...initialEmptyState, currentHint: coloringStep, hintLevel: 3 as const };
+    const map = getHighlights(state);
+    expect(map[0]![0]).toBe('hint-a');
+    expect(map[0]![4]).toBe('hint-b');
+  });
+
+  it('renders hint-a and hint-b at hintLevel 4', () => {
+    const state = { ...initialEmptyState, currentHint: coloringStep, hintLevel: 4 as const };
+    const map = getHighlights(state);
+    expect(map[0]![0]).toBe('hint-a');
+    expect(map[0]![4]).toBe('hint-b');
+  });
+
+  it('does NOT render hint-a/hint-b at hintLevel 2', () => {
+    const state = { ...initialEmptyState, currentHint: coloringStep, hintLevel: 2 as const };
+    const map = getHighlights(state);
+    expect(map[0]![0]).toBeNull();
+    expect(map[0]![4]).toBeNull();
+  });
+
+  it('falls back to "hint" tier for steps without colorGroups', () => {
+    const step: Step = {
+      technique: 'nakedSingle',
+      highlights: [{ row: 1, col: 1 }],
+      placements: [],
+      eliminations: [],
+      explanation: 'test',
+    };
+    const state = { ...initialEmptyState, currentHint: step, hintLevel: 3 as const };
+    expect(getHighlights(state)[1]![1]).toBe('hint');
+  });
+
+  it('"hint-a" overrides "color-a" on the same cell', () => {
+    const colorMarks = initialEmptyState.colorMarks.map((r) => [...r]);
+    colorMarks[0]![0] = 'A';
+    const state = {
+      ...initialEmptyState,
+      colorMarks,
+      currentHint: coloringStep,
+      hintLevel: 3 as const,
+    };
+    expect(getHighlights(state)[0]![0]).toBe('hint-a');
+  });
+});
+
 describe('possiblePlacements parameter', () => {
   it('produces no "possible" highlights when possiblePlacements is false', () => {
     const state = {

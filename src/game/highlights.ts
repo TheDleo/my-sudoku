@@ -8,6 +8,10 @@ export type CellHighlight =
   | 'selected-pencil'
   | 'conflict'
   | 'hint'
+  | 'hint-a'
+  | 'hint-b'
+  | 'color-a'
+  | 'color-b'
   | 'peer'
   | 'possible'
   | null;
@@ -16,7 +20,7 @@ export type HighlightMap = CellHighlight[][];
 export function getHighlights(
   state: Pick<
     GameState,
-    'cells' | 'given' | 'selection' | 'pencilMode' | 'currentHint' | 'hintLevel'
+    'cells' | 'given' | 'selection' | 'pencilMode' | 'currentHint' | 'hintLevel' | 'colorMarks'
   >,
   possiblePlacements = true,
 ): HighlightMap {
@@ -42,9 +46,22 @@ export function getHighlights(
     }
   }
 
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const mark = state.colorMarks[r]![c];
+      if (mark === 'A') map[r]![c] = 'color-a';
+      else if (mark === 'B') map[r]![c] = 'color-b';
+    }
+  }
+
   if (state.hintLevel >= 3 && state.currentHint !== null) {
-    for (const coord of state.currentHint.highlights) {
-      map[coord.row]![coord.col] = 'hint';
+    if (state.currentHint.colorGroups) {
+      for (const coord of state.currentHint.colorGroups.a) map[coord.row]![coord.col] = 'hint-a';
+      for (const coord of state.currentHint.colorGroups.b) map[coord.row]![coord.col] = 'hint-b';
+    } else {
+      for (const coord of state.currentHint.highlights) {
+        map[coord.row]![coord.col] = 'hint';
+      }
     }
   }
 
