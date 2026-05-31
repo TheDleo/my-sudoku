@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import { initialEmptyState } from '../game/reducers';
 import { useGameStore } from '../game/store';
 import { HintPanel } from './HintPanel';
@@ -79,5 +79,47 @@ describe('HintPanel', () => {
     const { getByText, queryByText } = render(<HintPanel />);
     expect(getByText('Naked Single')).toBeTruthy();
     expect(queryByText(mockStep.explanation)).toBeNull();
+  });
+
+  // New tests for "What is this?" link
+  it('shows "What is this?" link at level 2', () => {
+    useGameStore.setState({ ...initialEmptyState, currentHint: mockStep, hintLevel: 2 });
+    render(<HintPanel />);
+    expect(screen.getByRole('button', { name: /what is this/i })).toBeInTheDocument();
+  });
+
+  it('shows "What is this?" link at level 3', () => {
+    useGameStore.setState({ ...initialEmptyState, currentHint: mockStep, hintLevel: 3 });
+    render(<HintPanel />);
+    expect(screen.getByRole('button', { name: /what is this/i })).toBeInTheDocument();
+  });
+
+  it('does not show "What is this?" link at level 1', () => {
+    useGameStore.setState({ ...initialEmptyState, currentHint: mockStep, hintLevel: 1 });
+    render(<HintPanel />);
+    expect(screen.queryByRole('button', { name: /what is this/i })).not.toBeInTheDocument();
+  });
+
+  it('does not show "What is this?" link at level 4', () => {
+    useGameStore.setState({ ...initialEmptyState, currentHint: mockStep, hintLevel: 4 });
+    render(<HintPanel />);
+    expect(screen.queryByRole('button', { name: /what is this/i })).not.toBeInTheDocument();
+  });
+
+  it('clicking "What is this?" opens the explainer dialog', () => {
+    useGameStore.setState({ ...initialEmptyState, currentHint: mockStep, hintLevel: 2 });
+    render(<HintPanel />);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /what is this/i }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('closing the explainer dialog hides it', () => {
+    useGameStore.setState({ ...initialEmptyState, currentHint: mockStep, hintLevel: 2 });
+    render(<HintPanel />);
+    fireEvent.click(screen.getByRole('button', { name: /what is this/i }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /close/i }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
