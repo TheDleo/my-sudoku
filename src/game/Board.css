@@ -1,9 +1,11 @@
 .board {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
   aspect-ratio: 1;
   width: min(100%, 500px);
   border: 2px solid var(--fg);
+  overflow: hidden;
 }
 
 /* Thin borders on all cells */
