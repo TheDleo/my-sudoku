@@ -24,9 +24,9 @@ interface Particle {
 function makeParticles(w: number): Particle[] {
   const particles: Particle[] = [];
 
-  // Left cannon: fires from (10% W, 0) downward-right, angles 20°–80°
+  // Left cannon: fires from (10% W, 0) downward-right, angles 20°–70°
   for (let i = 0; i < PARTICLES_PER_CANNON; i++) {
-    const angle = Math.PI / 9 + Math.random() * ((Math.PI * 5) / 18); // 20° to 80°
+    const angle = Math.PI / 9 + Math.random() * ((Math.PI * 5) / 18); // 20° to 70°
     const speed = 5 + Math.random() * 6;
     particles.push({
       x: w * 0.1,
@@ -41,9 +41,9 @@ function makeParticles(w: number): Particle[] {
     });
   }
 
-  // Right cannon: fires from (90% W, 0) downward-left, angles 100°–160°
+  // Right cannon: fires from (90% W, 0) downward-left, angles 100°–150°
   for (let i = 0; i < PARTICLES_PER_CANNON; i++) {
-    const angle = (Math.PI * 5) / 9 + Math.random() * ((Math.PI * 5) / 18); // 100° to 160°
+    const angle = (Math.PI * 5) / 9 + Math.random() * ((Math.PI * 5) / 18); // 100° to 150°
     const speed = 5 + Math.random() * 6;
     particles.push({
       x: w * 0.9,
@@ -63,10 +63,12 @@ function makeParticles(w: number): Particle[] {
 
 export function Confetti({ onDone }: ConfettiProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      onDone();
+      onDoneRef.current();
       return;
     }
 
@@ -116,13 +118,13 @@ export function Confetti({ onDone }: ConfettiProps) {
       if (elapsed < DURATION_MS + FADE_MS) {
         rafId = requestAnimationFrame(draw);
       } else {
-        onDone();
+        onDoneRef.current();
       }
     }
 
     rafId = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(rafId);
-  }, [onDone]);
+  }, []);
 
   return (
     <canvas
