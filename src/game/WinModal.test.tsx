@@ -6,8 +6,17 @@ import { useGameStore } from './store';
 import { initialEmptyState } from './reducers';
 import { makePuzzle } from './testHelpers';
 
+// jsdom has no canvas implementation — stub getContext to avoid errors
+HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue(null);
+
 describe('WinModal', () => {
   beforeEach(() => {
+    // jsdom has no matchMedia — stub it so Confetti's prefers-reduced-motion check doesn't throw
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      configurable: true,
+      value: vi.fn().mockReturnValue({ matches: false }),
+    });
     vi.spyOn(persistence, 'save').mockImplementation(() => undefined);
     useGameStore.setState({
       ...initialEmptyState,
@@ -16,6 +25,7 @@ describe('WinModal', () => {
       puzzle: makePuzzle(),
       mistakes: 2,
       elapsedMs: 0,
+      hintsUsed: 3,
     });
   });
 
@@ -36,6 +46,11 @@ describe('WinModal', () => {
   it('renders the mistakes count', () => {
     render(<WinModal />);
     expect(screen.getByText('Mistakes: 2')).toBeInTheDocument();
+  });
+
+  it('renders the hints used count', () => {
+    render(<WinModal />);
+    expect(screen.getByText('Hints: 3')).toBeInTheDocument();
   });
 
   it('renders the formatted time', () => {

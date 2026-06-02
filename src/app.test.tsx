@@ -15,8 +15,17 @@ vi.mock('./game/persistence', () => ({
   save: vi.fn(),
 }));
 
+// jsdom has no canvas implementation — stub getContext to avoid errors from Confetti
+HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue(null);
+
 describe('App', () => {
   beforeEach(() => {
+    // jsdom has no matchMedia — stub it so Confetti's prefers-reduced-motion check doesn't throw
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      configurable: true,
+      value: vi.fn().mockReturnValue({ matches: false }),
+    });
     useGameStore.setState({ ...initialEmptyState });
     vi.mocked(persistence.load).mockReturnValue(null);
   });
