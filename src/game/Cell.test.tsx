@@ -4,7 +4,7 @@ import type { Digit } from '../types';
 import { initialEmptyState } from './reducers';
 import { useGameStore } from './store';
 import { cloneCells } from './helpers';
-import { Cell } from './Cell';
+import { Cell, cellAriaLabel } from './Cell';
 
 function seedCell(
   row: number,
@@ -20,6 +20,28 @@ function seedCell(
   given[row]![col] = isGiven;
   useGameStore.setState({ cells, given });
 }
+
+describe('cellAriaLabel', () => {
+  it('labels a given digit', () => {
+    const cell = { value: 5 as Digit, pencilMarks: new Set<Digit>() };
+    expect(cellAriaLabel(2, 6, cell, true)).toBe('Row 3, column 7, given 5');
+  });
+
+  it('labels a user-placed digit', () => {
+    const cell = { value: 5 as Digit, pencilMarks: new Set<Digit>() };
+    expect(cellAriaLabel(2, 6, cell, false)).toBe('Row 3, column 7, your 5');
+  });
+
+  it('labels pencil marks sorted', () => {
+    const cell = { value: null, pencilMarks: new Set([7, 1, 4] as Digit[]) };
+    expect(cellAriaLabel(2, 6, cell, false)).toBe('Row 3, column 7, candidates 1 4 7');
+  });
+
+  it('labels an empty cell', () => {
+    const cell = { value: null, pencilMarks: new Set<Digit>() };
+    expect(cellAriaLabel(2, 6, cell, false)).toBe('Row 3, column 7, empty');
+  });
+});
 
 describe('Cell', () => {
   beforeEach(() => {
