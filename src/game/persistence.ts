@@ -12,6 +12,7 @@ type SerializedState = {
   pencilMode: boolean;
   mistakes: number;
   elapsedMs: number;
+  hintsUsed?: number;
   colorMarks?: ('A' | 'B' | null)[][];
 };
 
@@ -29,6 +30,7 @@ export function serialize(state: GameState): string {
     pencilMode: state.pencilMode,
     mistakes: state.mistakes,
     elapsedMs: state.elapsedMs,
+    hintsUsed: state.hintsUsed,
     colorMarks: state.colorMarks,
   };
   return JSON.stringify(payload);
@@ -67,7 +69,7 @@ export function deserialize(json: string): GameState | null {
     pencilMode: parsed.pencilMode,
     mistakes: parsed.mistakes,
     elapsedMs: parsed.elapsedMs,
-    hintsUsed: 0,
+    hintsUsed: parsed.hintsUsed ?? 0,
     history: { past: [], future: [] },
     currentHint: null,
     hintLevel: 1,

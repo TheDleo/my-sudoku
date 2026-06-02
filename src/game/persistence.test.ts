@@ -56,6 +56,13 @@ describe('serialize / deserialize round-trip', () => {
     const parsed = JSON.parse(json) as { cells: { value: null; pencilMarks: number[] }[][] };
     expect(parsed.cells[1]![1]!.pencilMarks).toEqual([2, 5, 7]);
   });
+
+  it('round-trips hintsUsed through serialize → deserialize', () => {
+    const state = { ...loadPuzzle(initialEmptyState, makePuzzle()), hintsUsed: 7 };
+    const restored = deserialize(serialize(state));
+    expect(restored).not.toBeNull();
+    expect(restored!.hintsUsed).toBe(7);
+  });
 });
 
 describe('deserialize error handling', () => {
@@ -158,5 +165,16 @@ describe('colorMarks persistence', () => {
     expect(restored).not.toBeNull();
     for (let r = 0; r < 9; r++)
       for (let c = 0; c < 9; c++) expect(restored!.colorMarks[r]![c]).toBeNull();
+  });
+});
+
+describe('hintsUsed fallback', () => {
+  it('deserializes legacy saves missing hintsUsed as 0', () => {
+    const state = loadPuzzle(initialEmptyState, makePuzzle());
+    const raw = JSON.parse(serialize(state)) as Record<string, unknown>;
+    delete raw['hintsUsed'];
+    const restored = deserialize(JSON.stringify(raw));
+    expect(restored).not.toBeNull();
+    expect(restored!.hintsUsed).toBe(0);
   });
 });
