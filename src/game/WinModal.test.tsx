@@ -88,4 +88,14 @@ describe('WinModal', () => {
     fireEvent.click(card);
     expect(useGameStore.getState().won).toBe(true);
   });
+
+  it('win card has dialog role and aria-labelledby pointing to the heading', () => {
+    render(<WinModal />);
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toBeInTheDocument();
+    const labelId = dialog.getAttribute('aria-labelledby');
+    expect(labelId).toBeTruthy();
+    const heading = document.getElementById(labelId!);
+    expect(heading?.textContent).toBe('Puzzle Complete!');
+  });
 });

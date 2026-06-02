@@ -9,11 +9,11 @@ type Props = {
 };
 
 export function TechniqueExplainer({ technique, onClose }: Props) {
-  const cardRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!technique) return;
-    cardRef.current?.focus();
+    closeRef.current?.focus();
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
@@ -32,15 +32,18 @@ export function TechniqueExplainer({ technique, onClose }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="technique-explainer-title"
-        ref={cardRef}
-        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="technique-explainer__header">
           <h2 id="technique-explainer-title" className="technique-explainer__title">
             {title}
           </h2>
-          <button className="technique-explainer__close" aria-label="Close" onClick={onClose}>
+          <button
+            className="technique-explainer__close"
+            aria-label="Close"
+            onClick={onClose}
+            ref={closeRef}
+          >
             ×
           </button>
         </div>

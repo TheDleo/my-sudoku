@@ -22,11 +22,11 @@ export function SettingsModal({ isOpen, onClose }: Props) {
   const showMistakes = useSettingsStore((s) => s.showMistakes);
   const theme = useSettingsStore((s) => s.theme);
   const updateSetting = useSettingsStore((s) => s.updateSetting);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
-    cardRef.current?.focus();
+    closeRef.current?.focus();
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
@@ -43,13 +43,16 @@ export function SettingsModal({ isOpen, onClose }: Props) {
         role="dialog"
         aria-modal="true"
         aria-label="Settings"
-        ref={cardRef}
-        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="settings-modal__header">
           <h2 className="settings-modal__title">Settings</h2>
-          <button className="settings-modal__close" aria-label="Close" onClick={onClose}>
+          <button
+            className="settings-modal__close"
+            aria-label="Close"
+            onClick={onClose}
+            ref={closeRef}
+          >
             ×
           </button>
         </div>
