@@ -5,6 +5,7 @@ import { HintPanel } from './hints/HintPanel';
 import { NumberPad } from './game/NumberPad';
 import { LandingScreen } from './landing/LandingScreen';
 import { WinModal } from './game/WinModal';
+import { Announcer } from './game/Announcer';
 import { useGameStore } from './game/store';
 import { useThemeSync } from './settings/theme';
 
@@ -22,6 +23,7 @@ export function App() {
 
   return (
     <main onClick={handleMainClick}>
+      <Announcer />
       {screen === 'landing' && <LandingScreen />}
       {won && screen === 'game' && <WinModal />}
       <h1>Sudoku</h1>
