@@ -77,6 +77,7 @@ useGameStore.subscribe((state: GameStore, prev: GameStore) => {
     pencilMode: state.pencilMode,
     mistakes: state.mistakes,
     elapsedMs: state.elapsedMs,
+    hintsUsed: state.hintsUsed,
     history: state.history,
     currentHint: null,
     hintLevel: 1,

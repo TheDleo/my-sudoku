@@ -67,6 +67,7 @@ export function deserialize(json: string): GameState | null {
     pencilMode: parsed.pencilMode,
     mistakes: parsed.mistakes,
     elapsedMs: parsed.elapsedMs,
+    hintsUsed: 0,
     history: { past: [], future: [] },
     currentHint: null,
     hintLevel: 1,

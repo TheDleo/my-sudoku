@@ -19,6 +19,7 @@ export const initialEmptyState: GameState = {
   pencilMode: false,
   mistakes: 0,
   elapsedMs: 0,
+  hintsUsed: 0,
   history: { past: [], future: [] },
   currentHint: null,
   hintLevel: 1,
@@ -41,6 +42,7 @@ export function loadPuzzle(state: GameState, puzzle: Puzzle): GameState {
     pencilMode: false,
     mistakes: 0,
     elapsedMs: 0,
+    hintsUsed: 0,
     history: { past: [], future: [] },
     currentHint: null,
     hintLevel: 1,
@@ -209,7 +211,7 @@ export function fillCandidates(state: GameState): GameState {
 
 export function requestHint(state: GameState): GameState {
   const hint = getHint(state.cells);
-  return { ...state, currentHint: hint, hintLevel: 1 };
+  return { ...state, currentHint: hint, hintLevel: 1, hintsUsed: state.hintsUsed + 1 };
 }
 
 export function advanceHint(state: GameState): GameState {

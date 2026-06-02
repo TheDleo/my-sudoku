@@ -837,3 +837,37 @@ describe('loadPuzzle — resets colorMarks and colorMode', () => {
     expect(loadPuzzle(active, makePuzzle()).colorMode).toBeNull();
   });
 });
+
+describe('hintsUsed', () => {
+  it('initialEmptyState starts at 0', () => {
+    expect(initialEmptyState.hintsUsed).toBe(0);
+  });
+
+  it('requestHint increments hintsUsed by 1', () => {
+    const cells = cloneCellsForTest(initialEmptyState.cells);
+    for (let c = 0; c < 8; c++) {
+      cells[0]![c]!.value = (c + 1) as Digit;
+    }
+    const state = { ...initialEmptyState, cells };
+    const next = requestHint(state);
+    expect(next.hintsUsed).toBe(1);
+  });
+
+  it('requestHint increments even when no hint is available', () => {
+    const next = requestHint(initialEmptyState);
+    expect(next.hintsUsed).toBe(1);
+  });
+
+  it('requestHint accumulates across multiple calls', () => {
+    let s = requestHint(initialEmptyState);
+    s = requestHint(s);
+    s = requestHint(s);
+    expect(s.hintsUsed).toBe(3);
+  });
+
+  it('loadPuzzle resets hintsUsed to 0', () => {
+    const withHints = { ...initialEmptyState, hintsUsed: 5 };
+    const next = loadPuzzle(withHints, makePuzzle());
+    expect(next.hintsUsed).toBe(0);
+  });
+});

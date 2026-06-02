@@ -15,6 +15,7 @@ export type GameState = {
   pencilMode: boolean;
   mistakes: number;
   elapsedMs: number;
+  hintsUsed: number;
   history: { past: GameSnapshot[]; future: GameSnapshot[] };
   currentHint: Step | null;
   hintLevel: 1 | 2 | 3 | 4;
