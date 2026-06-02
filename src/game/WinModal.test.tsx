@@ -98,4 +98,9 @@ describe('WinModal', () => {
     const heading = document.getElementById(labelId!);
     expect(heading?.textContent).toBe('Puzzle Complete!');
   });
+
+  it('"New Game" button receives focus on mount', () => {
+    render(<WinModal />);
+    expect(screen.getByRole('button', { name: 'New Game' })).toHaveFocus();
+  });
 });
