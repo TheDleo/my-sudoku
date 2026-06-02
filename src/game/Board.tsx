@@ -59,7 +59,7 @@ export function Board() {
   return (
     <div
       className="board"
-      role="grid"
+      role="group"
       aria-label="Sudoku board"
       tabIndex={0}
       ref={boardRef}

@@ -42,11 +42,13 @@ export function SettingsModal({ isOpen, onClose }: Props) {
         className="settings-modal__card"
         role="dialog"
         aria-modal="true"
-        aria-label="Settings"
+        aria-labelledby="settings-modal-title"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="settings-modal__header">
-          <h2 className="settings-modal__title">Settings</h2>
+          <h2 id="settings-modal-title" className="settings-modal__title">
+            Settings
+          </h2>
           <button
             className="settings-modal__close"
             aria-label="Close"
