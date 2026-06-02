@@ -64,6 +64,7 @@ useGameStore.subscribe((state: GameStore, prev: GameStore) => {
     state.pencilMode === prev.pencilMode &&
     state.mistakes === prev.mistakes &&
     state.elapsedMs === prev.elapsedMs &&
+    state.hintsUsed === prev.hintsUsed &&
     state.puzzle === prev.puzzle &&
     state.colorMarks === prev.colorMarks
   ) {
