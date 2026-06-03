@@ -40,9 +40,9 @@ describe('App', () => {
       ...initialEmptyState,
       selection: { cell: { row: 0, col: 0 }, number: null },
     });
-    render(<App />);
-    // Click the <h1> — it is outside the Board, so Board's stopPropagation does not fire
-    fireEvent.click(screen.getByRole('heading'));
+    const { container } = render(<App />);
+    // Click the <main> element directly — outside the Board, so the deselect handler fires
+    fireEvent.click(container.querySelector('main')!);
     expect(useGameStore.getState().selection.cell).toBeNull();
   });
 

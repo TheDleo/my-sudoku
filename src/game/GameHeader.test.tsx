@@ -134,4 +134,29 @@ describe('GameHeader', () => {
     render(<GameHeader />);
     expect(screen.getByText('✕0')).toBeInTheDocument();
   });
+
+  it('renders the "Sudoku" h1 heading', () => {
+    render(<GameHeader />);
+    expect(screen.getByRole('heading', { name: 'Sudoku', level: 1 })).toBeInTheDocument();
+  });
+
+  it('renders a Settings button', () => {
+    render(<GameHeader />);
+    expect(screen.getByRole('button', { name: /settings/i })).toBeInTheDocument();
+  });
+
+  it('clicking Settings opens the settings modal', () => {
+    render(<GameHeader />);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /settings/i }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('closing the settings modal hides it', () => {
+    render(<GameHeader />);
+    fireEvent.click(screen.getByRole('button', { name: /settings/i }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /close/i }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
 });

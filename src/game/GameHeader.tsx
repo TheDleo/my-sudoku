@@ -1,10 +1,11 @@
 // src/game/GameHeader.tsx
 import './GameHeader.css';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { Difficulty } from '../types';
 import { formatTime } from './helpers';
 import { useGameStore } from './store';
 import { useSettingsStore } from '../settings/store';
+import { SettingsModal } from '../settings/SettingsModal';
 
 const DIFFICULTY_LABELS: Record<Difficulty, string> = {
   easy: 'Easy',
@@ -20,6 +21,7 @@ export function GameHeader() {
   const won = useGameStore((s) => s.won);
   const showTimer = useSettingsStore((s) => s.showTimer);
   const showMistakes = useSettingsStore((s) => s.showMistakes);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     if (won) return;
@@ -36,12 +38,25 @@ export function GameHeader() {
 
   return (
     <div className="game-header" onClick={(e) => e.stopPropagation()}>
-      <span className="game-header__difficulty">{DIFFICULTY_LABELS[difficulty]}</span>
-      {showTimer && <span className="game-header__time">{formatTime(elapsedMs)}</span>}
-      {showMistakes && <span className="game-header__mistakes">✕{mistakes}</span>}
-      <button className="game-header__new-game" onClick={handleNewGame}>
-        New Game
-      </button>
+      <div className="game-header__top">
+        <button
+          className="game-header__settings"
+          aria-label="Settings"
+          onClick={() => setIsSettingsOpen(true)}
+        >
+          ⚙
+        </button>
+        <h1 className="game-header__title">Sudoku</h1>
+        <button className="game-header__new-game" onClick={handleNewGame}>
+          New Game
+        </button>
+      </div>
+      <div className="game-header__stats">
+        <span className="game-header__difficulty">{DIFFICULTY_LABELS[difficulty]}</span>
+        {showTimer && <span className="game-header__time">{formatTime(elapsedMs)}</span>}
+        {showMistakes && <span className="game-header__mistakes">✕{mistakes}</span>}
+      </div>
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
 }

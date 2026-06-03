@@ -37,7 +37,7 @@ export function LandingScreen() {
   return (
     <div className="landing-overlay" onClick={(e) => e.stopPropagation()}>
       <div className="landing-card">
-        <p className="landing-title">Sudoku</p>
+        <h1 className="landing-title">Sudoku</h1>
         {hasSavedGame && (
           <button
             className="landing-btn landing-btn--resume"
