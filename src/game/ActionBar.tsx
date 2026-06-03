@@ -1,9 +1,7 @@
 // src/game/ActionBar.tsx
 import './ActionBar.css';
-import { useState } from 'react';
 import { useGameStore } from './store';
 import { useSettingsStore } from '../settings/store';
-import { SettingsModal } from '../settings/SettingsModal';
 
 export function ActionBar() {
   const pencilMode = useGameStore((s) => s.pencilMode);
@@ -11,7 +9,6 @@ export function ActionBar() {
   const canRedo = useGameStore((s) => s.history.future.length > 0);
   const colorMode = useGameStore((s) => s.colorMode);
   const autoCandidates = useSettingsStore((s) => s.autoCandidates);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handlePencilToggle = () => {
     useGameStore.getState().togglePencilMode();
@@ -52,25 +49,19 @@ export function ActionBar() {
       <button
         className={`action-bar__color-a${colorMode === 'A' ? ' action-bar__color-a--active' : ''}`}
         aria-pressed={colorMode === 'A'}
+        aria-label="Color A"
         onClick={() => useGameStore.getState().toggleColorMode('A')}
       >
-        🔵 A
+        🔵
       </button>
       <button
         className={`action-bar__color-b${colorMode === 'B' ? ' action-bar__color-b--active' : ''}`}
         aria-pressed={colorMode === 'B'}
+        aria-label="Color B"
         onClick={() => useGameStore.getState().toggleColorMode('B')}
       >
-        🟡 B
+        🟡
       </button>
-      <button
-        className="action-bar__settings"
-        aria-label="Settings"
-        onClick={() => setIsSettingsOpen(true)}
-      >
-        ⚙
-      </button>
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
 }
