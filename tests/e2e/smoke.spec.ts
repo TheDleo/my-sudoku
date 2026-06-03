@@ -91,21 +91,6 @@ const BULK_FILL_CELLS: [number, number, number][] = [
   [8, 6, 1],
 ];
 
-declare global {
-  interface Window {
-    __sudoku__?: {
-      createWorkerClient: unknown;
-      store: {
-        getState: () => {
-          loadPuzzle: (puzzle: unknown) => void;
-          selectCell: (coord: { row: number; col: number }) => void;
-          placeDigit: (digit: number) => void;
-        };
-      };
-    };
-  }
-}
-
 test('happy path: start → digit → hint → undo → solve → win modal', async ({ page }) => {
   // 1. Navigate to landing screen
   await page.goto('/');

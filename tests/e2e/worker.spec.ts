@@ -30,19 +30,3 @@ test('worker client returns a valid easy puzzle via a real Worker', async ({ pag
   expect(result.solutionRows).toBe(9);
   expect(result.solutionCols).toBe(9);
 });
-
-declare global {
-  interface Window {
-    __sudoku__?: {
-      createWorkerClient: () => {
-        getPuzzle: (d: 'easy' | 'medium' | 'hard' | 'expert') => Promise<{
-          id: string;
-          difficulty: 'easy' | 'medium' | 'hard' | 'expert';
-          initialBoard: ReadonlyArray<ReadonlyArray<number | null>>;
-          solution: ReadonlyArray<ReadonlyArray<number>>;
-        }>;
-        terminate: () => void;
-      };
-    };
-  }
-}
