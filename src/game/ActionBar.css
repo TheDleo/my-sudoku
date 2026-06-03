@@ -7,14 +7,14 @@
 
 .action-bar__pencil {
   flex: 1;
-  padding: 8px 16px;
+  padding: 6px 8px;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--surface);
   color: var(--fg);
   cursor: pointer;
-  font-size: 0.875rem;
-  min-height: 44px;
+  font-size: 0.75rem;
+  min-height: 36px;
 }
 
 .action-bar__pencil--active {
@@ -37,7 +37,7 @@
   color: var(--fg);
   cursor: pointer;
   font-size: 0.75rem;
-  min-height: 44px;
+  min-height: 36px;
 }
 
 .action-bar__undo,
@@ -55,7 +55,7 @@
   color: var(--fg);
   cursor: pointer;
   font-size: 0.75rem;
-  min-height: 44px;
+  min-height: 36px;
 }
 
 .action-bar__icon {
@@ -77,14 +77,14 @@
 .action-bar__color-a,
 .action-bar__color-b {
   flex: 0 0 44px;
-  padding: 8px 4px;
+  padding: 6px 4px;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--surface);
   color: var(--fg);
   cursor: pointer;
   font-size: 1.125rem;
-  min-height: 44px;
+  min-height: 36px;
 }
 
 .action-bar__color-a--active {
