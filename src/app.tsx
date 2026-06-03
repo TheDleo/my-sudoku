@@ -28,9 +28,9 @@ export function App() {
       {won && screen === 'game' && <WinModal />}
       {screen === 'game' && <GameHeader />}
       <Board />
-      <ActionBar />
-      <HintPanel />
       <NumberPad />
+      <HintPanel />
+      <ActionBar />
     </main>
   );
 }
