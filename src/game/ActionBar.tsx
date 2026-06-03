@@ -36,15 +36,32 @@ export function ActionBar() {
         ✏️ Pencil
       </button>
       {!autoCandidates && (
-        <button className="action-bar__candidates" onClick={handleFillCandidates}>
-          Candidates
+        <button
+          className="action-bar__candidates"
+          aria-label="Candidates"
+          onClick={handleFillCandidates}
+        >
+          <span className="action-bar__icon">±</span>
+          <span className="action-bar__label">Cands</span>
         </button>
       )}
-      <button className="action-bar__undo" onClick={handleUndo} disabled={!canUndo}>
-        Undo
+      <button
+        className="action-bar__undo"
+        aria-label="Undo"
+        onClick={handleUndo}
+        disabled={!canUndo}
+      >
+        <span className="action-bar__icon">↩</span>
+        <span className="action-bar__label">Undo</span>
       </button>
-      <button className="action-bar__redo" onClick={handleRedo} disabled={!canRedo}>
-        Redo
+      <button
+        className="action-bar__redo"
+        aria-label="Redo"
+        onClick={handleRedo}
+        disabled={!canRedo}
+      >
+        <span className="action-bar__icon">↪</span>
+        <span className="action-bar__label">Redo</span>
       </button>
       <button
         className={`action-bar__color-a${colorMode === 'A' ? ' action-bar__color-a--active' : ''}`}

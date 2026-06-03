@@ -25,27 +25,47 @@
 
 .action-bar__candidates {
   flex: 1;
-  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 4px;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--surface);
   color: var(--fg);
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   min-height: 44px;
 }
 
 .action-bar__undo,
 .action-bar__redo {
   flex: 1;
-  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 4px;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--surface);
   color: var(--fg);
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   min-height: 44px;
+}
+
+.action-bar__icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.action-bar__label {
+  font-size: 0.7rem;
+  line-height: 1;
 }
 
 .action-bar__undo:disabled,
