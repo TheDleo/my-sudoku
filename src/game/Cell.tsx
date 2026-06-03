@@ -2,27 +2,11 @@ import './Cell.css';
 import type { Digit } from '../types';
 import type { CellHighlight } from './highlights';
 import { useGameStore } from './store';
+import { cellAriaLabel } from './cellAriaLabel';
 
 type Props = { row: number; col: number; highlight: CellHighlight };
 
 const PENCIL_POSITIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
-
-export function cellAriaLabel(
-  row: number,
-  col: number,
-  cell: { value: Digit | null; pencilMarks: Set<Digit> },
-  isGiven: boolean,
-): string {
-  const prefix = `Row ${row + 1}, column ${col + 1}`;
-  if (cell.value !== null) {
-    return `${prefix}, ${isGiven ? 'given' : 'your'} ${cell.value}`;
-  }
-  if (cell.pencilMarks.size > 0) {
-    const marks = [...cell.pencilMarks].sort((a, b) => a - b).join(' ');
-    return `${prefix}, candidates ${marks}`;
-  }
-  return `${prefix}, empty`;
-}
 
 export function Cell({ row, col, highlight }: Props) {
   const cell = useGameStore((s) => s.cells[row]![col]!);

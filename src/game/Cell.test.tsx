@@ -4,7 +4,8 @@ import type { Digit } from '../types';
 import { initialEmptyState } from './reducers';
 import { useGameStore } from './store';
 import { cloneCells } from './helpers';
-import { Cell, cellAriaLabel } from './Cell';
+import { Cell } from './Cell';
+import { cellAriaLabel } from './cellAriaLabel';
 
 function seedCell(
   row: number,
