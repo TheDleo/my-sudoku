@@ -1,8 +1,14 @@
 .number-pad {
   display: flex;
+  flex-direction: column;
   width: min(100%, 500px);
   gap: 4px;
   margin-top: 12px;
+}
+
+.number-pad__row {
+  display: flex;
+  gap: 4px;
 }
 
 .number-pad__digit,
@@ -21,7 +27,7 @@
   font-size: clamp(1.125rem, 4vw, 1.25rem);
   line-height: 1;
   gap: 2px;
-  min-height: 44px;
+  min-height: 52px;
 }
 
 .number-pad__digit:disabled {
