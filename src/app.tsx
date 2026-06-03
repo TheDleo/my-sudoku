@@ -26,7 +26,6 @@ export function App() {
       <Announcer />
       {screen === 'landing' && <LandingScreen />}
       {won && screen === 'game' && <WinModal />}
-      <h1>Sudoku</h1>
       {screen === 'game' && <GameHeader />}
       <Board />
       <ActionBar />
