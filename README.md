@@ -6,6 +6,8 @@ A single-page sudoku web app with four difficulty tiers, manual and auto pencil 
 
 In active development. See [PLAN.md](./PLAN.md) for the full design and roadmap.
 
+[![CI](https://github.com/TheDleo/my-sudoku/actions/workflows/ci.yml/badge.svg)](https://github.com/TheDleo/my-sudoku/actions/workflows/ci.yml)
+
 ## Develop
 
 ```bash
