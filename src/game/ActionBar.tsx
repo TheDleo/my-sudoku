@@ -1,7 +1,7 @@
 // src/game/ActionBar.tsx
+import { useSettingsStore } from '../settings/store';
 import './ActionBar.css';
 import { useGameStore } from './store';
-import { useSettingsStore } from '../settings/store';
 
 export function ActionBar() {
   const pencilMode = useGameStore((s) => s.pencilMode);
@@ -33,7 +33,8 @@ export function ActionBar() {
         aria-pressed={pencilMode}
         onClick={handlePencilToggle}
       >
-        ✏️ Pencil
+        <span className="action-bar__icon">✎</span>
+        <span className="action-bar__label">Pencil</span>
       </button>
       {!autoCandidates && (
         <button
