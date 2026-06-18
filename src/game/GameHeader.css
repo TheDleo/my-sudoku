@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   width: min(100%, 500px);
-  gap: 2px;
-  margin-bottom: 8px;
+  gap: 0;
+  margin-bottom: 4px;
 }
 
 .game-header__top {
@@ -58,4 +58,5 @@
   color: var(--fg-muted);
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
+  line-height: 1.2;
 }
