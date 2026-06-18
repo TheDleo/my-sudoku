@@ -34,6 +34,7 @@ main {
   align-items: center;
   min-height: 100%;
   padding: 1rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -49,6 +50,7 @@ main {
 @media (max-width: 420px) {
   main {
     padding: 0.5rem;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
   }
 }
 
