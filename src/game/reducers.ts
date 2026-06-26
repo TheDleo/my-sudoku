@@ -211,13 +211,14 @@ export function fillCandidates(state: GameState): GameState {
 
 export function requestHint(state: GameState): GameState {
   const hint = getHint(state.cells);
-  return { ...state, currentHint: hint, hintLevel: 1, hintsUsed: state.hintsUsed + 1 };
+  return { ...state, currentHint: hint, hintLevel: 1 };
 }
 
 export function advanceHint(state: GameState): GameState {
   if (state.currentHint === null) return state;
   if (state.hintLevel >= 4) return state;
-  return { ...state, hintLevel: (state.hintLevel + 1) as 1 | 2 | 3 | 4 };
+  const hintsUsed = state.hintLevel === 1 ? state.hintsUsed + 1 : state.hintsUsed;
+  return { ...state, hintLevel: (state.hintLevel + 1) as 1 | 2 | 3 | 4, hintsUsed };
 }
 
 export function dismissHint(state: GameState): GameState {

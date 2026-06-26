@@ -518,6 +518,18 @@ describe('advanceHint', () => {
     const next = advanceHint(initialEmptyState);
     expect(next).toBe(initialEmptyState);
   });
+
+  it('increments hintsUsed when advancing from level 1', () => {
+    const state = { ...initialEmptyState, currentHint: mockStep, hintLevel: 1 as const };
+    expect(advanceHint(state).hintsUsed).toBe(1);
+  });
+
+  it('does not increment hintsUsed when advancing from level 2 or higher', () => {
+    const state2 = { ...initialEmptyState, currentHint: mockStep, hintLevel: 2 as const };
+    expect(advanceHint(state2).hintsUsed).toBe(0);
+    const state3 = { ...initialEmptyState, currentHint: mockStep, hintLevel: 3 as const };
+    expect(advanceHint(state3).hintsUsed).toBe(0);
+  });
 });
 
 describe('dismissHint', () => {
@@ -843,25 +855,32 @@ describe('hintsUsed', () => {
     expect(initialEmptyState.hintsUsed).toBe(0);
   });
 
-  it('requestHint increments hintsUsed by 1', () => {
+  it('requestHint does not increment hintsUsed', () => {
     const cells = cloneCellsForTest(initialEmptyState.cells);
     for (let c = 0; c < 8; c++) {
       cells[0]![c]!.value = (c + 1) as Digit;
     }
     const state = { ...initialEmptyState, cells };
     const next = requestHint(state);
-    expect(next.hintsUsed).toBe(1);
+    expect(next.hintsUsed).toBe(0);
   });
 
-  it('requestHint increments even when no hint is available', () => {
+  it('requestHint does not increment even when no hint is available', () => {
     const next = requestHint(initialEmptyState);
-    expect(next.hintsUsed).toBe(1);
+    expect(next.hintsUsed).toBe(0);
   });
 
-  it('requestHint accumulates across multiple calls', () => {
-    let s = requestHint(initialEmptyState);
-    s = requestHint(s);
-    s = requestHint(s);
+  it('dismissing at level 1 without advancing does not increment hintsUsed', () => {
+    const state = { ...initialEmptyState, currentHint: mockStep, hintLevel: 1 as const };
+    const next = dismissHint(state);
+    expect(next.hintsUsed).toBe(0);
+  });
+
+  it('advanceHint from level 1 accumulates across multiple hints', () => {
+    const withHint = { ...initialEmptyState, currentHint: mockStep, hintLevel: 1 as const };
+    let s = advanceHint(withHint);
+    s = advanceHint({ ...s, currentHint: mockStep, hintLevel: 1 as const });
+    s = advanceHint({ ...s, currentHint: mockStep, hintLevel: 1 as const });
     expect(s.hintsUsed).toBe(3);
   });
 
