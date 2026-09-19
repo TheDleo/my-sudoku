@@ -3,10 +3,22 @@ import { classify } from './difficulty';
 import { digHoles } from './digHoles';
 import { fullGrid } from './fullGrid';
 
+/**
+ * Budgets are sized from the measured tier distribution of maximally-dug
+ * grids (1500 samples): easy 41.9%, medium 18.5%, hard 1.2%, expert 11.5%,
+ * unsolvable-by-our-solver 26.9%.
+ *
+ * 'hard' is by far the narrowest band -- it needs a hard technique but must
+ * not need an expert one, and digging maximally usually overshoots straight
+ * past it. At 1.2% a 100-attempt budget fails ~30% of the time, which is the
+ * "gave up after 100 attempts" error users hit on the Hard tier. 1000
+ * attempts brings that under 1 in 200,000; the median is still ~83 attempts
+ * (~3s), and the budget is only reached in the rarest cases.
+ */
 const DEFAULT_MAX_ATTEMPTS: Record<Difficulty, number> = {
   easy: 500,
   medium: 200,
-  hard: 100,
+  hard: 1000,
   expert: 100,
 };
 
