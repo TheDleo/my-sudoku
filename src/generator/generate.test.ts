@@ -27,6 +27,28 @@ describe('generate', { timeout: 30_000 }, () => {
     expect(classify(puzzle.initialBoard)).toBe('hard');
   });
 
+  // Only ~1.2% of maximally-dug grids classify as 'hard' (measured over 1500
+  // samples), so the default attempt budget has to be large. Seed 5 needs more
+  // than 100 attempts and used to throw "gave up after 100 attempts" -- the
+  // same failure users hit on the Hard tier roughly 30% of the time.
+  it('finds a hard puzzle on a seed that needs more than 100 attempts', () => {
+    // Seed 5 needs exactly 143 attempts. Pinning the old budget's failure here
+    // keeps the fixture honest: a future change to fullGrid/digHoles/
+    // shuffleInPlace could make seed 5 cheap to satisfy, and the assertion
+    // below would keep passing while no longer covering the bug.
+    //
+    // Note the limit of what this proves -- the budget is >= 143, not that it
+    // is sized for the measured 1.2% hit rate. That is a statistical property
+    // and deliberately not asserted here; see the comment in generate.ts.
+    expect(() => generate('hard', { rng: mulberry32(5), maxAttempts: 100 })).toThrow(
+      /gave up after 100 attempts/,
+    );
+
+    const puzzle = generate('hard', { rng: mulberry32(5) });
+    expect(puzzle.difficulty).toBe('hard');
+    expect(classify(puzzle.initialBoard)).toBe('hard');
+  });
+
   it('returns a puzzle with the requested difficulty (expert)', () => {
     const puzzle = generate('expert', { rng: mulberry32(44) });
     expect(puzzle.difficulty).toBe('expert');
