@@ -4,7 +4,11 @@ import { classify } from './difficulty';
 import { hasUniqueSolution } from './uniqueness';
 import { mulberry32 } from './rng';
 
-describe('generate', () => {
+// Seeded generation is deterministic but CPU-bound: the 'hard' cases take ~3s on
+// a dev machine and ~6s on a CI runner, which overruns Vitest's 5s default. Vitest
+// 2 never enforced that default on synchronous tests, so this only became visible
+// on the upgrade to Vitest 4.
+describe('generate', { timeout: 30_000 }, () => {
   it('returns a puzzle with the requested difficulty (easy)', () => {
     const puzzle = generate('easy', { rng: mulberry32(11) });
     expect(puzzle.difficulty).toBe('easy');
@@ -56,27 +60,19 @@ describe('generate', () => {
 });
 
 describe('generate — time budget', () => {
-  it(
-    'generate("expert") completes within 30 seconds',
-    () => {
-      const start = Date.now();
-      const puzzle = generate('expert');
-      const elapsed = Date.now() - start;
-      expect(puzzle.difficulty).toBe('expert');
-      expect(elapsed).toBeLessThan(30_000);
-    },
-    { timeout: 45_000 },
-  );
+  it('generate("expert") completes within 30 seconds', () => {
+    const start = Date.now();
+    const puzzle = generate('expert');
+    const elapsed = Date.now() - start;
+    expect(puzzle.difficulty).toBe('expert');
+    expect(elapsed).toBeLessThan(30_000);
+  }, 45_000);
 
-  it(
-    'generate("easy") completes within 5 seconds',
-    () => {
-      const start = Date.now();
-      const puzzle = generate('easy');
-      const elapsed = Date.now() - start;
-      expect(puzzle.difficulty).toBe('easy');
-      expect(elapsed).toBeLessThan(5_000);
-    },
-    { timeout: 10_000 },
-  );
+  it('generate("easy") completes within 5 seconds', () => {
+    const start = Date.now();
+    const puzzle = generate('easy');
+    const elapsed = Date.now() - start;
+    expect(puzzle.difficulty).toBe('easy');
+    expect(elapsed).toBeLessThan(5_000);
+  }, 10_000);
 });
