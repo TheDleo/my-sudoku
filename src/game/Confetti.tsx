@@ -63,8 +63,18 @@ function makeParticles(w: number): Particle[] {
 
 export function Confetti({ onDone }: ConfettiProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // WinModal passes an inline arrow, so `onDone` gets a fresh identity every
+  // render. Holding it in a ref keeps the animation effect below on empty deps
+  // instead of restarting the confetti on every parent render. The ref is
+  // synced in an effect rather than during render: mutating a ref while
+  // rendering is impure and misbehaves under StrictMode's double render.
+  // useRef already seeds `current` with the first `onDone`, so the immediate
+  // reduced-motion call below is correct on mount.
   const onDoneRef = useRef(onDone);
-  onDoneRef.current = onDone;
+  useEffect(() => {
+    onDoneRef.current = onDone;
+  }, [onDone]);
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
