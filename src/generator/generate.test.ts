@@ -4,7 +4,11 @@ import { classify } from './difficulty';
 import { hasUniqueSolution } from './uniqueness';
 import { mulberry32 } from './rng';
 
-describe('generate', () => {
+// Seeded generation is deterministic but CPU-bound: the 'hard' cases take ~3s on
+// a dev machine and ~6s on a CI runner, which overruns Vitest's 5s default. Vitest
+// 2 never enforced that default on synchronous tests, so this only became visible
+// on the upgrade to Vitest 4.
+describe('generate', { timeout: 30_000 }, () => {
   it('returns a puzzle with the requested difficulty (easy)', () => {
     const puzzle = generate('easy', { rng: mulberry32(11) });
     expect(puzzle.difficulty).toBe('easy');
